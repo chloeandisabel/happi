@@ -10,7 +10,7 @@ defmodule Happi do
   Takes an optional API key. If not specified, it is read from the
   environment variable `HEROKU_API_KEY`.
   """
-  @spec api_client(String.t) :: Happi.t
+  # @spec api_client(String.t) :: Happi.t
   def api_client(api_key \\ nil) do
     key = if api_key, do: api_key, else: System.get_env("HEROKU_API_KEY")
     unless key do
@@ -29,7 +29,7 @@ defmodule Happi do
   name. Instead of having to pass it around, Happi modules assume they can
   find the app in the client.
   """
-  @spec set_app(Happi.t) :: Happi.t
+  # @spec set_app(Happi.t) :: Happi.t
   def set_app(client, name_or_id \\ nil) do
     unless name_or_id do
       name_or_id = System.get_env("HAPPI_HEROKU_APP")
@@ -45,7 +45,7 @@ defmodule Happi do
   @doc """
   Returns the current API rate limit (number of calls left).
   """
-  @spec rate_limit(Happi.t) :: integer
+  # @spec rate_limit(Happi.t) :: integer
   def rate_limit(client) do
     client
     |> Happi.API.get("/account/rate-limits")
