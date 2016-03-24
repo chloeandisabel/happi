@@ -4,7 +4,8 @@ Happi is a Heroku API client.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+If [available in Hex](https://hex.pm/docs/publish), the package can be
+installed as:
 
   1. Add happi to your list of dependencies in `mix.exs`:
 
@@ -20,17 +21,17 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
 ## Running
 
-The environment variable `HEROKU_API_KEY` must be defined. Optionally, you
-can define `HEROKU_APP` and it will be used as the default app for all
-requests.
+If defined, the environment variable `HEROKU_API_KEY` will be the default
+API key. Likewise, `HAPPI_HEROKU_APP` is the optionaly default application
+name.
 
 ## Usage
 
 ## To Do
 
-- Key,...
-- Macros for standard REST behaviors, useable by Happi.Heroku.* modules
-- Setup module
+- More endpoints
+- Macros for standard REST behaviors, useable by Happi.Heroku.* modules to
+  reduce the amount of code needed in each
 - Handle 206 Partial Content responses
 - Handle ranges (name, order, max, etc.) in get requests
 - Parse datetime strings
