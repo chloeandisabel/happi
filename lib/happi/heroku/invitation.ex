@@ -4,30 +4,40 @@ defmodule Happi.Heroku.Invitation do
   Heroku invitation.
   """
 
+  alias Happi.Heroku.User
+
   @derive [Poison.Encoder]
   
-  defstruct user: %Happi.Heroku.User{},
+  defstruct user: %User{},
     created_at: nil
 
+  @type t :: %__MODULE__{
+    user: User.t,
+    created_at: String.t        # TODO datetime
+  }
+
+  @spec invite(Happi.t, String.t, String.t) :: t
   def invite(client, email, name \\ nil) do
     client
     |> Happi.API.post("/invitations",
                       Poison.encode!(%{email: email, name: name}))
-    |> Poison.decode!(as: %Happi.Heroku.Invitation{})
+    |> Poison.decode!(as: %__MODULE__{})
   end
 
+  @spec get(Happi.t, String.t) :: t
   def get(client, token) do
     client
     |> Happi.API.get("/invitations/#{token}")
-    |> Poison.decode!(as: %Happi.Heroku.Invitation{})
+    |> Poison.decode!(as: %__MODULE__{})
   end
 
+  @spec finalize(Happi.t, String.t, String.t, boolean) :: t
   def finalize(client, token, password, receive_newsletter \\ false) do
     client
     |> Happi.API.patch("/invitations/#{token}",
                        Poison.encode!(%{password: password,
                                         password_confirmation: password,
                                         receive_newsletter: receive_newsletter}))
-    |> Poison.decode!(as: %Happi.Heroku.Invitation{})
+    |> Poison.decode!(as: %__MODULE__{})
   end
 end

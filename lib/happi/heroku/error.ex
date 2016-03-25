@@ -9,4 +9,10 @@ defmodule Happi.Heroku.Error do
     message: "",
     url: ""
 
+  @type t :: %__MODULE__{
+    code: integer,
+    id: String.t,
+    message: String.t,
+    url: String.t
+  }
 end

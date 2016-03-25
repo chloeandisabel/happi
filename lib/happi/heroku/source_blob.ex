@@ -6,7 +6,7 @@ defmodule Happi.Heroku.SourceBlob do
 
   @derive [Poison.Encoder]
 
-  defstruct checksum: "",
-    url: "",
-    version: ""
+  defstruct checksum: "", url: "", version: ""
+
+  @type t :: %__MODULE__{checksum: String.t, url: String.t, version: String.t}
 end

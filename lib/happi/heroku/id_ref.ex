@@ -7,4 +7,6 @@ defmodule Happi.Heroku.IdRef do
   @derive [Poison.Encoder]
   
   defstruct id: ""
+
+  @type t :: %__MODULE__{id: String.t}
 end

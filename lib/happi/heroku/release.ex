@@ -4,6 +4,7 @@ defmodule Happi.Heroku.Release do
   Heroku release description.
   """
   
-  defstruct id: "",
-    version: 0
+  defstruct id: "", version: 0
+
+  @type t :: %__MODULE__{id: String.t, version: integer}
 end

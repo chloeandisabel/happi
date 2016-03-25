@@ -13,4 +13,14 @@ defmodule Happi.Heroku.DomainName do
     default: 0,
     created_at: nil,
     updated_at: nil
+
+  @type t :: %__MODULE__{
+    id: String.t,
+    app_id: integer,
+    base_domain: String.t,
+    domain: String.t,
+    default: integer,
+    created_at: String.t,       # TODO datetime
+    updated_at: String.t        # TODO datetime
+  }
 end

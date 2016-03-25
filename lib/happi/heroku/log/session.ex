@@ -11,15 +11,18 @@ defmodule Happi.Heroku.Log.Session do
     created_at: nil,
     updated_at: nil
 
+  @type t :: %__MODULE__{
+    id: String.t,
+    logplex_url: String.t,
+    created_at: String.t,       # TODO datetime
+    updated_at: String.t        # TODO datetime
+  }
+
+  @spec create(Happi.t, Keyword.t) :: t
   def create(client, options \\ []) do
-    dyno = Keyword.get(options, :dyno, "web.1")
-    lines = Keyword.get(options, :lines, 10)
-    source = Keyword.get(options, :source, "app")
-    tail = Keyword.get(options, :tail, true)
     client
     |> Happi.API.post("/apps/#{client.app.name}/log-sessions",
-                      Poison.encode(%{dyno: dyno, lines: lines,
-                                      source: source, tail: tail}))
-    |> Poison.decode!(as: %Happi.Heroku.Log.Session{})
+                      Poison.encode!(options))
+    |> Poison.decode!(as: %__MODULE__{})
   end
 end

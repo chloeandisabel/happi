@@ -6,6 +6,7 @@ defmodule Happi.Heroku.Postdeploy do
   
   @derive [Poison.Encoder]
   
-  defstruct exit_code: 0,
-    output: ""
+  defstruct exit_code: 0, output: ""
+  
+  @type t :: %__MODULE__{exit_code: integer, output: String.t}
 end
