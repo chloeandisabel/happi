@@ -4,6 +4,8 @@ defmodule Happi.Heroku.Account do
   Heroku Account.
   """
 
+  @derive [Poison.Encoder]
+
   defstruct allow_tracking: true,
     beta: false,
     email: "",
@@ -39,25 +41,9 @@ defmodule Happi.Heroku.Account do
     password: String.t,         # only used when updating
     new_password: String.t      # ditto
   }
+end
 
-  @spec get(Happi.t) :: t
-  def get(client) do
-    client
-    |> Happi.API.get("/account")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
-  @spec update(Happi.t, t) :: t
-  def update(client, account) do
-    client
-    |> Happi.API.patch("/account", Poison.encode!(account))
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
-  @spec delete(Happi.t, t) :: t
-  def delete(client, account) do
-    client
-    |> Happi.API.delete("/account", Poison.encode!(account))
-    |> Poison.decode!(as: %__MODULE__{})
-  end
+defimpl Happi.Endpoint, for: Happi.Heroku.Account do
+  def endpoint_url(_), do: "/account"
+  def app?(_), do: false
 end

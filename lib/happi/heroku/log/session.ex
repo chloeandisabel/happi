@@ -2,6 +2,8 @@ defmodule Happi.Heroku.Log.Session do
   
   @moduledoc """
   Heroku log drain.
+
+  Only the `Happi.create` endpoint makes sense.
   """
   
   @derive [Poison.Encoder]
@@ -17,12 +19,9 @@ defmodule Happi.Heroku.Log.Session do
     created_at: String.t,       # TODO datetime
     updated_at: String.t        # TODO datetime
   }
+end
 
-  @spec create(Happi.t, Keyword.t) :: t
-  def create(client, options \\ []) do
-    client
-    |> Happi.API.post("/apps/#{client.app.name}/log-sessions",
-                      Poison.encode!(options))
-    |> Poison.decode!(as: %__MODULE__{})
-  end
+defimpl Happi.Endpoint, for: Happi.Heroku.Session do
+  def endpoint_url(_), do: "/log-sessions"
+  def app?(_), do: true
 end

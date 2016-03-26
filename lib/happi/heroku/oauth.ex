@@ -31,38 +31,15 @@ defmodule Happi.Heroku.OAuth do
     updated_at: String.t        # TODO datetime
   }
 
-  @spec list(Happi.t) :: [t]
-  def list(client) do
-    client
-    |> Happi.API.get("/oauth/authorizations")
-    |> Poison.decode!(as: [%__MODULE__{}])
-  end
-
-  @spec get(Happi.t, String.t) :: t
-  def get(client, oauth_authorization_id) do
-    client
-    |> Happi.API.get("/oauth/authorizations/#{oauth_authorization_id}")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
-  @spec create(Happi.t, Map.t) :: t
-  def create(client, params) do
-    client
-    |> Happi.API.post("/oauth/authorizations", Poison.encode!(params))
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
   @spec regenerate(Happi.t, String.t) :: t
   def regenerate(client, oauth_authorization_id) do
     client
     |> Happi.API.post("/oauth/authorizations/#{oauth_authorization_id}/actions/regenerate-tokens")
     |> Poison.decode!(as: %__MODULE__{})
   end
+end
 
-  @spec delete(Happi.t, String.t) :: t
-  def delete(client, oauth_authorization_id) do
-    client
-    |> Happi.API.delete("/oauth/authorizations/#{oauth_authorization_id}")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
+defimpl Happi.Endpoint, for: Happi.Heroku.OAuth do
+  def endpoint_url(_), do: "/oauth/authorizations"
+  def app?(_), do: false
 end

@@ -59,27 +59,17 @@ defmodule Happi.Heroku.Addon.Attachment do
     |> Poison.deocde!(as: %__MODULE__{})
   end
 
-  @doc """
-  Creates an application add-on attachment. Returns a
-  __MODULE__ structure.
-  """
-  @spec create(Happi.t, String.t, String.t, boolean, String.t) :: t
-  def create(client, addon_name_or_id, app_name_or_id, force \\ false, name \\ nil) do
-    request = %{addon: addon_name_or_id,
-                app: app_name_or_id,
-                force: force}
-    if name do
-      request = request |> Map.put(:name, name)
-    end
+  @spec create(Happi.t, Map.t) :: t
+  def create(client, params) do
     client
-    |> Happi.API.post(client, "/addon-attachments", request)
+    |> Happi.API.post(client, "/addon-attachments", Poison.encode!(params))
     |> Poison.deocde!(as: %__MODULE__{})
   end
 
-  @spec delete(Happi.t, t) :: t
-  def delete(client, attachment) do
+  @spec delete(Happi.t, String.t) :: t
+  def delete(client, id) do
     client
-    |> Happi.API.delete(client, "/addon-attchments/#{attachment.id}")
+    |> Happi.API.delete(client, "/addon-attchments/#{id}")
     |> Poison.deocde!(as: %__MODULE__{})
   end
 end

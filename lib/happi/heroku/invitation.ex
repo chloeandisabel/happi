@@ -2,6 +2,9 @@ defmodule Happi.Heroku.Invitation do
   
   @moduledoc """
   Heroku invitation.
+
+  Only the `Happi.get` endpoint is useful. For all other interactions, use
+  the methods in this module.
   """
 
   alias Happi.Heroku.User
@@ -24,13 +27,6 @@ defmodule Happi.Heroku.Invitation do
     |> Poison.decode!(as: %__MODULE__{})
   end
 
-  @spec get(Happi.t, String.t) :: t
-  def get(client, token) do
-    client
-    |> Happi.API.get("/invitations/#{token}")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
   @spec finalize(Happi.t, String.t, String.t, boolean) :: t
   def finalize(client, token, password, receive_newsletter \\ false) do
     client
@@ -40,4 +36,9 @@ defmodule Happi.Heroku.Invitation do
                                         receive_newsletter: receive_newsletter}))
     |> Poison.decode!(as: %__MODULE__{})
   end
+end
+
+defimpl Happi.Endpoint, for: Happi.Heroku.Invitation do
+  def endpoint_url(_), do: "/invitations"
+  def app?(_), do: false
 end

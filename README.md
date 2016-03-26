@@ -27,11 +27,19 @@ name.
 
 ## Usage
 
+```elixir
+c = Happi.api_client("api-key")    # If no param, use $HEROKU_API_KEY
+c = c |> Happi.set_app("app-name") # If no param, use $HAPPI_HEROKU_APP
+
+Happi.list(c, Happi.Heroku.Dyno)   # For app in c
+Happi.rate_limit
+```
+
 ## To Do
 
+- Have a way to limit what `Happi.{list,get,etc.}` methods are available for
+  each `Happi.Heroku.*` type
 - More endpoints
-- Macros for standard REST behaviors, useable by Happi.Heroku.* modules to
-  reduce the amount of code needed in each
 - Handle 206 Partial Content responses
 - Handle ranges (name, order, max, etc.) in get requests
 - Parse datetime strings

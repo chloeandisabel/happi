@@ -25,31 +25,9 @@ defmodule Happi.Heroku.Feature do
     created_at: String.t,       # TODO datetime
     updated_at: String.t        # TODO datetime
   }
+end
 
-  @doc """
-  Return a list containing all of your features.
-  """
-  @spec list(Happi.t) :: [t]
-  def list(client) do
-    client
-    |> Happi.API.get("/account/features")
-    |> Poison.decode!(as: [%__MODULE__{}])
-  end
-
-  @doc """
-  Returns a specific feature.
-  """
-  @spec get(Happi.t, String.t) :: t
-  def get(client, feature_name_or_id) do
-    client
-    |> Happi.API.get("/account/features/#{feature_name_or_id}")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
-  @spec update(Happi.t, t) :: t
-  def update(client, feature) do
-    client
-    |> Happi.API.patch("account/features/#{feature.id}",
-                       Poison.encode!(feature))
-  end
+defimpl Happi.Endpoint, for: Happi.Heroku.Feature do
+  def endpoint_url(_), do: "/account/features"
+  def app?(_), do: false
 end

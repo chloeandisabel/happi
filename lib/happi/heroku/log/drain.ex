@@ -23,33 +23,9 @@ defmodule Happi.Heroku.Log.Drain do
     created_at: String.t,       # TODO datetime
     updated_at: String.t        # TODO datetime
   }
+end
 
-  @spec list(Happi.t) :: [t]
-  def list(client) do
-    client
-    |> Happi.API.get("/apps/#{client.app.url}/log-drains")
-    |> Poison.decode!(as: [%__MODULE__{}])
-  end
-
-  @spec get(Happi.t, String.t) :: t
-  def get(client, id_or_url) do
-    client
-    |> Happi.API.get("/apps/#{client.app.url}/log-drains/#{id_or_url}")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
-  @spec create(Happi.t, String.t) :: t
-  def create(client, url) do
-    client
-    |> Happi.API.post("/apps/#{client.app.url}/log-drains",
-                      Poison.encode!(%{url: url}))
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
-  @spec delete(Happi.t, String.t) :: t
-  def delete(client, id_or_url) do
-    client
-    |> Happi.API.delete("/apps/#{client.app.url}/log-drains/#{id_or_url}")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
+defimpl Happi.Endpoint, for: Happi.Heroku.Drain do
+  def endpoint_url(_), do: "/log-drains"
+  def app?(_), do: true
 end

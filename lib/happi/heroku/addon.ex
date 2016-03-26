@@ -33,6 +33,10 @@ defmodule Happi.Heroku.Addon do
     updated_at: String.t        # TODO datetime
   }
 
+  @doc """
+  Returns all addons, not just those for the app stored in `client`.
+  """
+
   @spec list(Happi.t) :: [t]
   def list(client) do
     client
@@ -41,42 +45,17 @@ defmodule Happi.Heroku.Addon do
   end
 
   @doc """
-  Returns a list of addons for the current app.
+  Returns a specific addon. `Happi.get` won't work.
   """
-  @spec list_for_app(Happi.t) :: [t]
-  def list_for_app(client) do
-    client
-    |> Happi.API.get("/apps/#{client.app.id}/addons")
-    |> Poison.decode!(as: [%__MODULE__{}])
-  end
-
   @spec get(Happi.t, String.t) :: t
   def get(client, name_or_id) do
     client
     |> Happi.API.get("/addons/#{name_or_id}")
     |> Poison.decode!(as: %__MODULE__{})
   end
+end
 
-  @spec create(Happi.t, t) :: t
-  def create(client, addon) do
-    client
-    |> Happi.API.post("/apps/#{client.app.id}/addons",
-                      Poison.encode!(addon))
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
-  @spec update(Happi.t, t) :: t
-  def update(client, addon) do
-    client
-    |> Happi.API.patch("/apps/#{client.app.id}/addons/#{addon.id}",
-                       Poison.encode!(addon))
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
-  @spec delete(Happi.t, t) :: t
-  def delete(client, addon) do
-    client
-    |> Happi.API.delete("/apps/#{client.app.id}/addons/#{addon.id}")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
+defimpl Happi.Endpoint, for: Happi.Heroku.Addon do
+  def endpoint_url(_), do: "/addons"
+  def app?(_), do: true
 end

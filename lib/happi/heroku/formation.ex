@@ -27,34 +27,9 @@ defmodule Happi.Heroku.Formation do
     created_at: String.t,
     updated_at: String.t
   }
+end
 
-  @spec list(Happi.t) :: [t]
-  def list(client) do
-    client
-    |> Happi.API.get("/apps/#{client.app.name}/formation/")
-    |> Poison.decode!(as: [%__MODULE__{}])
-  end
-
-  @spec get(Happi.t, String.t) :: t
-  def get(client, id_or_type) do
-    client
-    |> Happi.API.get("/apps/#{client.app.name}/formation/#{id_or_type}")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
-  @spec update(Happi.t, [t]) :: [t]
-  def update(client, formations) when is_list(formations) do
-    client
-    |> Happi.API.patch("/apps/#{client.app.id}/formation",
-                       Poison.encode!(formations, as: [%__MODULE__{}]))
-    |> Poison.decode!(as: [%__MODULE__{}])
-  end
-
-  @spec update(Happi.t, t) :: t
-  def update(client, formation) do
-    client
-    |> Happi.API.patch("/apps/#{client.app.id}/formation/#{formation.id}",
-                       Poison.encode!(formation))
-    |> Poison.decode!(as: %__MODULE__{})
-  end
+defimpl Happi.Endpoint, for: Happi.Heroku.Formation do
+  def endpoint_url(_), do: "/formation"
+  def app?(_), do: true
 end
