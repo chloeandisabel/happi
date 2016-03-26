@@ -55,7 +55,7 @@ defmodule Happi.API do
   defp body_or_error(%HTTPoison.Response{status_code: c} = r) do
     err = r.body
     |> Poison.decode!(as: %Happi.Heroku.Error{code: c})
-    raise "#{err.code} #{err.id |> String.replace("_", " ")}: #{err.message}"
+    raise inspect(err)
   end
 
   defp headers(client) do

@@ -45,37 +45,9 @@ defmodule Happi.Heroku.App do
     created_at: String.t,       # TODO datetime
     updated_at: String.t        # TODO datetime
   }
+end
 
-  @doc """
-  Return a list containing all of your apps.
-  """
-  @spec list(Happi.t) :: [t]
-  def list(client) do
-    client
-    |> Happi.API.get("/apps")
-    |> Poison.decode!(as: [%__MODULE__{}])
-  end
-
-  @doc """
-  Returns the client's app. If you want to get another app, create another
-  client.
-  """
-  @spec get(Happi.t) :: t
-  def get(client) do
-    client.app
-  end      
-
-  @doc """
-  Only used by Happi to grab the app initially. Everybody else should call
-  `get/1`.
-
-  `client` will contain base_url and key but, hopefully unsurprisingly, no
-  app.
-  """
-  @spec initial_get(Happi.t, String.t) :: t
-  def initial_get(client, app_name_or_id) do
-    client
-    |> Happi.API.get("/apps/#{app_name_or_id}")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
+defimpl Happi.Endpoint, for: Happi.Heroku.App do
+  def endpoint_url(_), do: "/apps"
+  def app?(_), do: false
 end

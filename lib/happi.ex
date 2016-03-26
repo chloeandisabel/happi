@@ -1,7 +1,12 @@
 defmodule Happi do
   @moduledoc """
   Happi is a Heroku API client.
+
+  Defines a standard list of methods: list, get, create, update, and delete.
   """
+
+  alias Happi.Endpoint
+  alias Happi.Heroku.App
 
   defstruct base_url: "",
     key: "",
@@ -10,7 +15,7 @@ defmodule Happi do
   @type t :: %Happi{
     base_url: String.t,
     key: String.t,
-    app: Happi.Heroku.App.t
+    app: App.t
   }
 
   @api_url "https://api.heroku.com"
@@ -48,7 +53,9 @@ defmodule Happi do
       raise ArgumentError,
         message: "Heroku app name or id not specified and HAPPI_HEROKU_APP not defined"
     end
-    app = client |> Happi.Heroku.App.initial_get(name_or_id)
+    app = client
+    |> Map.put(:app, %{id: name_or_id})
+    |> get(App, name_or_id)
     client |> Map.put(:app, app)
   end
 
@@ -61,5 +68,53 @@ defmodule Happi do
     |> Happi.API.get("/account/rate-limits")
     |> Poison.decode!
     |> Map.get("remaining")
+  end
+
+  @spec list(Happi.t, module) :: [any]
+  def list(client, module) do
+    client
+    |> Happi.API.get(url_for(client, module))
+    |> Poison.decode!(as: [struct(module)])
+  end
+
+  @spec get(Happi.t, module, String.t) :: any
+  def get(client, module, id) do
+    client
+    |> Happi.API.get(url_for(client, module, id))
+    |> Poison.decode!(as: struct(module))
+  end
+
+  @spec create(Happi.t, module, any) :: any
+  def create(client, module, data) do
+    client
+    |> Happi.API.post(url_for(client, module), Poison.encode!(data))
+    |> Poison.decode!(as: [struct(module)])
+  end
+
+  @spec update(Happi.t, module, any) :: any
+  def update(client, module, data) do
+    client
+    |> Happi.API.patch(url_for(client, module), Poison.encode!(data))
+    |> Poison.decode!(as: [struct(module)])
+  end
+
+  @spec delete(Happi.t, module, String.t) :: any
+  def delete(client, module, id) do
+    client
+    |> Happi.API.delete(url_for(client, module, id))
+    |> Poison.decode!(as: [struct(module)])
+  end
+
+  defp url_for(client, module, id) do
+    url_for(client, module) <> "/#{id}"
+  end
+
+  defp url_for(client, module) do
+    s = struct(module)
+    if Endpoint.app?(s) do
+      "/apps/#{client.app.id}#{Endpoint.endpoint_url(s)}"
+    else
+      Endpoint.endpoint_url(s)
+    end
   end
 end

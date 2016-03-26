@@ -34,32 +34,6 @@ defmodule Happi.Heroku.Dyno do
     updated_at: String.t        # TODO datetime
   }
 
-  @spec list(Happi.t) :: [t]
-  def list(client) do
-    client
-    |> Happi.API.get("/apps/#{client.app.id}/dynos")
-    |> Poison.decode!(as: [%__MODULE__{}])
-  end
-
-  @spec get(Happi.t, String.t) :: t
-  def get(client, id_or_name) do
-    client
-    |> Happi.API.get("/apps/#{client.app.id}/dynos/#{id_or_name}")
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
-  @spec create(Happi.t, String.t) :: t
-  def create(client, command, options \\ []) do
-    attach = Keyword.get(options, :attach, true)
-    env = Keyword.get(options, :env, %{})
-    size = Keyword.get(options, :size, "standard-1X")
-    client
-    |> Happi.API.post("/apps/#{client.app.name}/dynos",
-                      Poison.encode(%{command: command, attach: attach,
-                                      env: env, size: size}))
-    |> Poison.decode!(as: %__MODULE__{})
-  end
-
   @spec restart(Happi.t, String.t) :: :ok
   def restart(client, id_or_name) do
     client
@@ -73,4 +47,9 @@ defmodule Happi.Heroku.Dyno do
     |> Happi.API.delete("/apps/#{client.app.name}/dynos")
     :ok                         # TODO handle error return codes
   end
+end
+
+defimpl Happi.Endpoint, for: Happi.Heroku.Dyno do
+  def endpoint_url(_), do: "/dynos"
+  def app?(_), do: true
 end
