@@ -1,6 +1,13 @@
 # Happi
 
-Happi is a Heroku API client.
+Happi is a
+[Heroku API](https://devcenter.heroku.com/articles/platform-api-reference)
+client written in [Elixir](http://elixir-lang.org/).
+
+Happi provides structs for most of the resources exposed by Heroku's API. A
+standard set of functions (`list/2`, `get/3`, `create/3`, `update/3`, and
+`delete/3`) is useable by all of them. Some structs come with additional
+functions as dictated by the Heroku API.
 
 ## Installation
 
@@ -19,30 +26,23 @@ installed as:
           [applications: [:happi]]
         end
 
-## Running
-
-If defined, the environment variable `HEROKU_API_KEY` will be the default
-API key. Likewise, `HAPPI_HEROKU_APP` is the optionaly default application
-name.
-
-## Usage
+## Using Happi
 
 First we create a client.
 
 ```elixir
-iex> client = Happi.api_client("api-key") |> Happi.set_app("app-name")
+iex> client = Happi.api_client(api_key: "secret", app: "app-name-or-id")
 ```
 
 `api_client/1` returns a `Happi.t` struct. The API key argument is optional;
 if it is not passed in then the environment variable `$HEROKU_API_KEY` is
-used.
+used. The app argument is an app name or id which is optional and will
+default to `$HAPPI_HEROKU_APP` or nil.
 
-`set_app/1` adds a `Happi.Heroku.App.t` struct to the client. This is useful
-because many Heroku API structs such as `Dyno` are resources within an
-`App`. Instead of having to obtain and pass around the `App` struct, keeping
-it in the client struct reduces the number of arguments that need to be
-passed around. The application name argument is optional; if it is not
-passed in then the environment variable `$HAPPI_HEROKU_APP` by used.
+Many Heroku API structs such as `Dyno` are resources within an `App`.
+Instead of having to obtain and pass around the `App` struct, keeping it in
+the client struct reduces the number of arguments that need to be passed
+around.
 
 Heroku's API limits the number of requests per hour. Let's find out how many
 we have left:
@@ -77,6 +77,12 @@ example is a no-op since the updated struct is the same as the original.
 iex> f = fn(d) -> Task.async(client |> Happi.update(Dyno, d)) end
 iex> ds |> Enum.map(f) |> Enum.map(&Task.await/1)
 ```
+
+## Configuration
+
+The only configuration option is `:api` which specifies the module that
+implements the basic HTTP `get`, `post`, `delete`, etc. commands. This
+allows the tests to use a mock API.
 
 ## To Do
 

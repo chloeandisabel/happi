@@ -10,11 +10,13 @@ defmodule Happi do
 
   defstruct base_url: "",
     key: "",
+    api: Happi.API,
     app: nil
 
   @type t :: %Happi{
     base_url: String.t,
     key: String.t,
+    api: module,
     app: App.t
   }
 
@@ -24,90 +26,166 @@ defmodule Happi do
 
   @doc """
   Returns a client that can be used for further requests to the Heroku API.
-  Takes an optional API key. If not specified, it is read from the
-  environment variable `HEROKU_API_KEY`.
-  """
-  @spec api_client(String.t) :: t
-  def api_client(api_key \\ nil) do
-    key = if api_key, do: api_key, else: System.get_env("HEROKU_API_KEY")
-    unless key do
-      raise ArgumentError,
-        message: "Heroku API key not specified and HEROKU_API_KEY not defined"
-    end
-    %{base_url: @api_url, key: key}
-  end
 
-  @doc """
-  Returns a client with an `:app` entry containing the app specified by
-  `name_or_id`. If not specified, the app name or id is read from the
-  environment variable `HAPPI_HEROKU_APP`.
+  ## Options
 
-  This is useful because many of the Heroku API calls require an app id or
-  name. Instead of having to pass it around, Happi modules assume they can
-  find the app in the client.
+     * `:api_key` - when not specified, it is read from the environment
+       variable `HEROKU_API_KEY`
+
+     * `:api_module` - when not specified, it is read from the config file
+
+     * `:app` - a Heroku application name or id string
+
+  ## Examples
+
+     iex> Happi.api_client(api_key: "secret")
+     %Happi{api: Happi.MockAPI, app: nil, base_url: "https://api.heroku.com",
+       key: "secret"}
+
+     iex> Happi.api_client(api_key: "secret", api_module: SomeModule)
+     %Happi{api: SomeModule, app: nil, base_url: "https://api.heroku.com",
+       key: "secret"}
+
+     iex> Happi.api_client(api_key: "secret", app: "myapp")
+     %Happi{api: Happi.MockAPI,
+      app: %Happi.Heroku.App{archived_at: "2012-01-01T12:00:00Z",
+       build_stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
+       buildpack_provided_description: "Ruby/Rack",
+       created_at: "2012-01-01T12:00:00Z",
+       git_url: "https://git.heroku.com/example.git",
+       id: "uuid", maintenance: false, name: "myapp",
+       owner: %Happi.Heroku.User{email: "username@example.com", full_name: nil,
+        id: "uuid"},
+       region: %Happi.Heroku.Ref{id: "uuid", name: "us"},
+       released_at: "2012-01-01T12:00:00Z", repo_size: 0, slug_size: 0,
+       space: %Happi.Heroku.Ref{id: "uuid", name: "nasa"},
+       stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
+       updated_at: "2012-01-01T12:00:00Z",
+       web_url: "https://example.herokuapp.com/"},
+      base_url: "https://api.heroku.com",
+      key: "secret"}
   """
-  @spec set_app(t) :: t
-  def set_app(client, name_or_id \\ nil) do
-    unless name_or_id do
-      name_or_id = System.get_env("HAPPI_HEROKU_APP")
-    end
-    unless name_or_id do
-      raise ArgumentError,
-        message: "Heroku app name or id not specified and HAPPI_HEROKU_APP not defined"
-    end
-    app = client
-    |> Map.put(:app, %{id: name_or_id})
-    |> get(App, name_or_id)
-    client |> Map.put(:app, app)
+  @spec api_client(Keyword.t) :: t
+  def api_client(options \\ []) do
+    key = Keyword.get(options, :api_key, System.get_env("HEROKU_API_KEY"))
+    mod = Keyword.get(options, :api_module, Application.get_env(:happi, :api))
+    app_identifier = Keyword.get(options, :app, System.get_env("HAPPI_HEROKU_APP"))
+
+    client = %Happi{base_url: @api_url, key: key, api: mod}
+    app = if app_identifier do
+            client
+            |> Map.put(:app, %{id: app_identifier})
+            |> get(App, app_identifier)
+          end
+    %{client | app: app}
   end
 
   # ================ Heroku API endpoints ================
 
   @doc """
   Returns the current API rate limit (number of calls left).
+
+  ## Examples
+
+     iex> Happi.api_client |> Happi.rate_limit
+     1234
   """
   @spec rate_limit(t) :: integer
   def rate_limit(client) do
     client
-    |> Happi.API.get("/account/rate-limits")
+    |> client.api.get("/account/rate-limits")
     |> Poison.decode!
     |> Map.get("remaining")
   end
 
   # ================ Happi.Endpoint REST calls ================
 
+  @doc """
+  Gets a list of resources.
+
+  ## Examples
+
+     iex> Happi.api_client |> Happi.list(Happi.Heroku.App)
+     [%Happi.Heroku.App{archived_at: "2012-01-01T12:00:00Z",
+      build_stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
+      buildpack_provided_description: "Ruby/Rack",
+      created_at: "2012-01-01T12:00:00Z",
+      git_url: "https://git.heroku.com/example.git",
+      id: "uuid", maintenance: false, name: "myapp",
+      owner: %Happi.Heroku.User{email: "username@example.com", full_name: nil,
+       id: "uuid"},
+      region: %Happi.Heroku.Ref{id: "uuid", name: "us"},
+      released_at: "2012-01-01T12:00:00Z", repo_size: 0, slug_size: 0,
+      space: %Happi.Heroku.Ref{id: "uuid", name: "nasa"},
+      stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
+      updated_at: "2012-01-01T12:00:00Z",
+      web_url: "https://example.herokuapp.com/"}]
+  """
   @spec list(t, module) :: [map]
   def list(client, module) do
     client
-    |> Happi.API.get(url_for(client, module))
+    |> client.api.get(url_for(client, module))
     |> decode!([struct(module)])
   end
 
+  @doc """
+  Gets a single resource.
+
+  ## Examples
+
+     iex> Happi.api_client |> Happi.get(Happi.Heroku.App, "myapp")
+     %Happi.Heroku.App{archived_at: "2012-01-01T12:00:00Z",
+      build_stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
+      buildpack_provided_description: "Ruby/Rack",
+      created_at: "2012-01-01T12:00:00Z",
+      git_url: "https://git.heroku.com/example.git",
+      id: "uuid", maintenance: false, name: "myapp",
+      owner: %Happi.Heroku.User{email: "username@example.com", full_name: nil,
+       id: "uuid"},
+      region: %Happi.Heroku.Ref{id: "uuid", name: "us"},
+      released_at: "2012-01-01T12:00:00Z", repo_size: 0, slug_size: 0,
+      space: %Happi.Heroku.Ref{id: "uuid", name: "nasa"},
+      stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
+      updated_at: "2012-01-01T12:00:00Z",
+      web_url: "https://example.herokuapp.com/"}
+
+     iex> Happi.api_client |> Happi.get(Happi.Heroku.App, "no-such-app")
+     %Happi.Heroku.Error{code: 404, id: "", message: "no such application", url: ""}
+  """
   @spec get(t, module, String.t) :: map
   def get(client, module, id) do
     client
-    |> Happi.API.get(url_for(client, module, id))
+    |> client.api.get(url_for(client, module, id))
     |> decode!(struct(module))
   end
 
-  @spec create(t, module, any) :: map
+  @doc """
+  Creates a resource.
+  """
+  @spec create(t, module, map) :: map
   def create(client, module, data) do
     client
-    |> Happi.API.post(url_for(client, module), Poison.encode!(data))
+    |> client.api.post(url_for(client, module), Poison.encode!(data))
     |> decode!([struct(module)])
   end
 
-  @spec update(t, module, any) :: map
+  @doc """
+  Updates a resource.
+  """
+  @spec update(t, module, map) :: map
   def update(client, module, data) do
     client
-    |> Happi.API.patch(url_for(client, module), Poison.encode!(data))
+    |> client.api.patch(url_for(client, module), Poison.encode!(data))
     |> decode!([struct(module)])
   end
 
+  @doc """
+  Deletes a resource.
+  """
   @spec delete(t, module, String.t) :: map
   def delete(client, module, id) do
     client
-    |> Happi.API.delete(url_for(client, module, id))
+    |> client.api.delete(url_for(client, module, id))
     |> decode!([struct(module)])
   end
 
@@ -129,6 +207,8 @@ defmodule Happi do
     end
   end
 
+  # Given either an API response JSON string or an `Error`, either parses
+  # the JSON as `decode_type` and returns that or returns the `Error`.
   @spec decode!(String.t | Error.t, module | Enum.t) :: map
   defp decode!(%Error{} = err, _) do
     err
