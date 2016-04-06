@@ -71,7 +71,7 @@ it's already stored in the client.
 
 Want to spawn multiple requests in parallel? That's easy with Elixir's
 `Task` module. In this example we call `update/1` on all our Dynos. This
-would be a no-op since the updated struct is the same as the original.
+example is a no-op since the updated struct is the same as the original.
 
 ```elixir
 iex> f = fn(d) -> Task.async(client |> Happi.update(Dyno, d)) end
