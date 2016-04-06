@@ -6,7 +6,7 @@ defmodule Happi do
   """
 
   alias Happi.Endpoint
-  alias Happi.Heroku.App
+  alias Happi.Heroku.{App, Error}
 
   defstruct base_url: "",
     key: "",
@@ -76,47 +76,49 @@ defmodule Happi do
 
   # ================ Happi.Endpoint REST calls ================
 
-  @spec list(Happi.t, module) :: [any]
+  @spec list(t, module) :: [map]
   def list(client, module) do
     client
     |> Happi.API.get(url_for(client, module))
-    |> Poison.decode!(as: [struct(module)])
+    |> decode!([struct(module)])
   end
 
-  @spec get(Happi.t, module, String.t) :: any
+  @spec get(t, module, String.t) :: map
   def get(client, module, id) do
     client
     |> Happi.API.get(url_for(client, module, id))
-    |> Poison.decode!(as: struct(module))
+    |> decode!(struct(module))
   end
 
-  @spec create(Happi.t, module, any) :: any
+  @spec create(t, module, any) :: map
   def create(client, module, data) do
     client
     |> Happi.API.post(url_for(client, module), Poison.encode!(data))
-    |> Poison.decode!(as: [struct(module)])
+    |> decode!([struct(module)])
   end
 
-  @spec update(Happi.t, module, any) :: any
+  @spec update(t, module, any) :: map
   def update(client, module, data) do
     client
     |> Happi.API.patch(url_for(client, module), Poison.encode!(data))
-    |> Poison.decode!(as: [struct(module)])
+    |> decode!([struct(module)])
   end
 
-  @spec delete(Happi.t, module, String.t) :: any
+  @spec delete(t, module, String.t) :: map
   def delete(client, module, id) do
     client
     |> Happi.API.delete(url_for(client, module, id))
-    |> Poison.decode!(as: [struct(module)])
+    |> decode!([struct(module)])
   end
 
   # ================ Private helpers ================
 
+  @spec url_for(t, module, String.t) :: String.t
   defp url_for(client, module, id) do
     url_for(client, module) <> "/#{id}"
   end
 
+  @spec url_for(t, module) :: String.t
   defp url_for(client, module) do
     s = struct(module)
     url = Endpoint.endpoint_url(s)
@@ -125,5 +127,13 @@ defmodule Happi do
     else
       url
     end
+  end
+
+  @spec decode!(String.t | Error.t, module | Enum.t) :: map
+  defp decode!(%Error{} = err, _) do
+    err
+  end
+  defp decode!(body, decode_type) do
+    body |> Poison.decode!(as: decode_type)
   end
 end
