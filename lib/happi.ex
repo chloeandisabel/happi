@@ -20,6 +20,8 @@ defmodule Happi do
 
   @api_url "https://api.heroku.com"
 
+  # ================ Client creation ================
+
   @doc """
   Returns a client that can be used for further requests to the Heroku API.
   Takes an optional API key. If not specified, it is read from the
@@ -59,6 +61,8 @@ defmodule Happi do
     client |> Map.put(:app, app)
   end
 
+  # ================ Heroku API endpoints ================
+
   @doc """
   Returns the current API rate limit (number of calls left).
   """
@@ -69,6 +73,8 @@ defmodule Happi do
     |> Poison.decode!
     |> Map.get("remaining")
   end
+
+  # ================ Happi.Endpoint REST calls ================
 
   @spec list(Happi.t, module) :: [any]
   def list(client, module) do
@@ -105,16 +111,19 @@ defmodule Happi do
     |> Poison.decode!(as: [struct(module)])
   end
 
+  # ================ Private helpers ================
+
   defp url_for(client, module, id) do
     url_for(client, module) <> "/#{id}"
   end
 
   defp url_for(client, module) do
     s = struct(module)
+    url = Endpoint.endpoint_url(s)
     if Endpoint.app?(s) do
-      "/apps/#{client.app.id}#{Endpoint.endpoint_url(s)}"
+      "/apps/#{client.app.id}#{url}"
     else
-      Endpoint.endpoint_url(s)
+      url
     end
   end
 end
