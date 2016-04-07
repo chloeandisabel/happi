@@ -92,6 +92,3 @@ to change this value.
 - More endpoints
 - Handle 206 Partial Content responses
 - Handle ranges (name, order, max, etc.) in get requests
-- Parse datetime strings. We could either return Elixir-style datetime
-  tuples or seconds since the epoch.
-
