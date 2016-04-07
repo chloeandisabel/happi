@@ -1,7 +1,11 @@
 defmodule Happi.API do
   
   @moduledoc """
-  HTTP methods.
+  Functions that implement HTTP methods. Used by `Happi` functions. They all
+  take a `Happi` struct as their first argument.
+
+  All of these functions return either JSON or a `Happi.Heroku.Error`
+  struct. The caller needs to be able to handle either kind of response.
   """
 
   alias Happi.Heroku.Error
@@ -9,6 +13,8 @@ defmodule Happi.API do
   @doc """
   Performs a GET request to the Heroku API and returns the result body. Used
   by many of the `Happi.Heroku.*` modules.
+
+  Returns a `Happi.Heroku.Error` if the API signals an error.
   """
   @spec get(Happi.t, String.t) :: String.t | Error.t
   def get(client, path) do
@@ -19,6 +25,8 @@ defmodule Happi.API do
   @doc """
   Performs a PATCH request to the Heroku API and returns the result body.
   Used by many of the `Happi.Heroku.*` modules.
+
+  Returns a `Happi.Heroku.Error` if the API signals an error.
   """
   @spec patch(Happi.t, String.t, String.t) :: String.t | Error.t
   def patch(client, path, body) do
@@ -29,6 +37,8 @@ defmodule Happi.API do
   @doc """
   Performs a POST request to the Heroku API and returns the result body.
   Used by many of the `Happi.Heroku.*` modules.
+
+  Returns a `Happi.Heroku.Error` if the API signals an error.
   """
   @spec post(Happi.t, String.t, String.t) :: String.t | Error.t
   def post(client, path, body) do
@@ -39,6 +49,8 @@ defmodule Happi.API do
   @doc """
   Performs a DELETE request to the Heroku API and returns the result body.
   Used by many of the `Happi.Heroku.*` modules.
+
+  Returns a `Happi.Heroku.Error` if the API signals an error.
   """
   @spec delete(Happi.t, String.t) :: String.t | Error.t
   def delete(client, path) do
@@ -49,6 +61,8 @@ defmodule Happi.API do
   @doc """
   Performs a HEAD request to the Heroku API and returns the result body.
   Used by many of the `Happi.Heroku.*` modules.
+
+  Returns a `Happi.Heroku.Error` if the API signals an error.
   """
   @spec head(Happi.t, String.t) :: String.t | Error.t
   def head(client, path) do

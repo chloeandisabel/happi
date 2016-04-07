@@ -59,7 +59,7 @@ iex> client |> Happi.list(Happi.Heroku.App)
 #=> [%Happi.Heroku.App{...}]
 ```
 
-What dynos does the "app-name" application have?
+What dynos does the "app-name-or-id" application have?
 
 ```elixir
 iex> ds = client |> Happi.list(Happi.Heroku.Dyno)
@@ -80,16 +80,18 @@ iex> ds |> Enum.map(f) |> Enum.map(&Task.await/1)
 
 ## Configuration
 
-The only configuration option is `:api` which specifies the module that
-implements the basic HTTP `get`, `post`, `delete`, etc. commands. This
-allows the tests to use a mock API.
+The only Happi application configuration option is `:api` which specifies
+the module that implements the basic HTTP `get`, `post`, `delete`, etc.
+commands. This allows the tests to use a mock API. Normally you won't have
+to change this value.
 
 ## To Do
 
-- Tests
 - Have a way to limit what `Happi.{list,get,etc.}` methods are available for
   each `Happi.Heroku.*` type
 - More endpoints
 - Handle 206 Partial Content responses
 - Handle ranges (name, order, max, etc.) in get requests
-- Parse datetime strings
+- Parse datetime strings. We could either return Elixir-style datetime
+  tuples or seconds since the epoch.
+
