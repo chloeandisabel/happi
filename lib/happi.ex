@@ -6,10 +6,10 @@ defmodule Happi do
   """
 
   alias Happi.Endpoint
-  alias Happi.Heroku.{App, Error}
+  alias Happi.Heroku.{Error}
 
-  defstruct base_url: "",
-    key: "",
+  defstruct base_url: nil,
+    key: nil,
     api: Happi.API,
     app: nil
 
@@ -17,7 +17,7 @@ defmodule Happi do
     base_url: String.t,
     key: String.t,
     api: module,
-    app: App.t
+    app: String.t
   }
 
   @api_url "https://api.heroku.com"
@@ -25,16 +25,33 @@ defmodule Happi do
   # ================ Client creation ================
 
   @doc """
-  Returns a client that can be used for further requests to the Heroku API.
+  Returns a client struct that can be used for further requests to the
+  Heroku API. The client contains information needed to connect to Heroku's
+  API.
+
+  The client struct also optinally contains an application id or name which
+  will be used to retrieve application resources such as dynos. Storing an
+  app id or name in the client means that you don't have to pass it in to
+  every call about application resources such as dynos, collaborators, and
+  buildpacks.
+
+  To retrieve app resources from a different application, create a new
+  client containing the other application id or name, or simply replace the
+  app name in the client you have. (Of course, since Elixir is immutable
+  under the hood, you're really creating a new client struct anyway.) See the
+  example below.
 
   ## Options
 
-     * `:api_key` - when not specified, it is read from the environment
-       variable `HEROKU_API_KEY`
+     * `:api_key` - Your Heroku API key. When not specified, it is read from
+       the environment variable `$HEROKU_API_KEY`.
 
-     * `:api_module` - when not specified, it is read from the config file
+     * `:api_module` - The module that implements the low-level HTTP `get`,
+       `put`, `post`, etc. functions. When not specified, it is read from
+       the config file
 
-     * `:app` - a Heroku application name or id string
+     * `:app` - A Heroku application name or id string. When not specified,
+       the environment variable `$HAPPI_HEROKU_APP` is used.
 
   ## Examples
 
@@ -47,37 +64,24 @@ defmodule Happi do
        key: "secret"}
 
      iex> Happi.api_client(api_key: "secret", app: "myapp")
-     %Happi{api: Happi.MockAPI,
-      app: %Happi.Heroku.App{archived_at: "2012-01-01T12:00:00Z",
-       build_stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
-       buildpack_provided_description: "Ruby/Rack",
-       created_at: "2012-01-01T12:00:00Z",
-       git_url: "https://git.heroku.com/example.git",
-       id: "uuid", maintenance: false, name: "myapp",
-       owner: %Happi.Heroku.User{email: "username@example.com", full_name: nil,
-        id: "uuid"},
-       region: %Happi.Heroku.Ref{id: "uuid", name: "us"},
-       released_at: "2012-01-01T12:00:00Z", repo_size: 0, slug_size: 0,
-       space: %Happi.Heroku.Ref{id: "uuid", name: "nasa"},
-       stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
-       updated_at: "2012-01-01T12:00:00Z",
-       web_url: "https://example.herokuapp.com/"},
-      base_url: "https://api.heroku.com",
-      key: "secret"}
+     %Happi{api: Happi.MockAPI, app: "myapp",
+      base_url: "https://api.heroku.com", key: "secret"}
+
+     Here's an example of building a client struct for another app, given an
+     existing client struct.
+
+     iex> client = Happi.api_client(api_key: "secret")
+     ...> client = %{client | app: "app-uuid-or-name"}
+     ...> client
+     %Happi{api: Happi.MockAPI, app: "app-uuid-or-name",
+      base_url: "https://api.heroku.com", key: "secret"}
   """
   @spec api_client(Keyword.t) :: t
   def api_client(options \\ []) do
     key = Keyword.get(options, :api_key, System.get_env("HEROKU_API_KEY"))
     mod = Keyword.get(options, :api_module, Application.get_env(:happi, :api))
-    app_identifier = Keyword.get(options, :app, System.get_env("HAPPI_HEROKU_APP"))
-
-    client = %Happi{base_url: @api_url, key: key, api: mod}
-    app = if app_identifier do
-            client
-            |> Map.put(:app, %{id: app_identifier})
-            |> get(App, app_identifier)
-          end
-    %{client | app: app}
+    app = Keyword.get(options, :app, System.get_env("HAPPI_HEROKU_APP"))
+    %Happi{base_url: @api_url, key: key, api: mod, app: app}
   end
 
   # ================ Heroku API endpoints ================
@@ -101,7 +105,8 @@ defmodule Happi do
   # ================ Happi.Endpoint REST calls ================
 
   @doc """
-  Gets a list of resources.
+  Gets a list of resources. The id of the application in `client` is used to
+  retrieve resources such as dynos that are owned by applications.
 
   ## Examples
 
@@ -111,7 +116,7 @@ defmodule Happi do
       buildpack_provided_description: "Ruby/Rack",
       created_at: "2012-01-01T12:00:00Z",
       git_url: "https://git.heroku.com/example.git",
-      id: "uuid", maintenance: false, name: "myapp",
+      id: "app-uuid", maintenance: false, name: "myapp",
       owner: %Happi.Heroku.User{email: "username@example.com", full_name: nil,
        id: "uuid"},
       region: %Happi.Heroku.Ref{id: "uuid", name: "us"},
@@ -120,6 +125,15 @@ defmodule Happi do
       stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
       updated_at: "2012-01-01T12:00:00Z",
       web_url: "https://example.herokuapp.com/"}]
+
+     iex> Happi.api_client(app: "myapp") |> Happi.list(Happi.Heroku.Dyno)
+     [%Happi.Heroku.Dyno{id: "dyno-uuid", name: "mydyno", attach_url: nil,
+      command: "command that started dyno",
+      app: %Happi.Heroku.Ref{id: "app-uuid", name: "myapp"},
+      release: %Happi.Heroku.Release{id: "uuid", version: 1},
+      size: "small 1X", type: "type", state: "Rhode Island",
+      created_at: "2012-01-01T12:00:00Z",
+      updated_at: "2012-01-01T12:00:00Z"}]
   """
   @spec list(t, module) :: [map]
   def list(client, module) do
@@ -139,7 +153,7 @@ defmodule Happi do
       buildpack_provided_description: "Ruby/Rack",
       created_at: "2012-01-01T12:00:00Z",
       git_url: "https://git.heroku.com/example.git",
-      id: "uuid", maintenance: false, name: "myapp",
+      id: "app-uuid", maintenance: false, name: "myapp",
       owner: %Happi.Heroku.User{email: "username@example.com", full_name: nil,
        id: "uuid"},
       region: %Happi.Heroku.Ref{id: "uuid", name: "us"},
@@ -201,7 +215,7 @@ defmodule Happi do
     s = struct(module)
     url = Endpoint.endpoint_url(s)
     if Endpoint.app?(s) do
-      "/apps/#{client.app.id}#{url}"
+      "/apps/#{client.app}#{url}"
     else
       url
     end

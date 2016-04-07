@@ -1,9 +1,9 @@
 defmodule Happi.MockAPI do
 
-  alias Happi.Heroku.{App, Ref, User, Error}
+  alias Happi.Heroku.{App, Dyno, Release, Ref, User, Error}
 
   @myapp %App{
-    id: "uuid",
+    id: "app-uuid",
     name: "myapp",
     buildpack_provided_description: "Ruby/Rack",
     build_stack: %Ref{id: "uuid", name: "cedar-14"},
@@ -22,15 +22,31 @@ defmodule Happi.MockAPI do
     updated_at: "2012-01-01T12:00:00Z"
   }
 
-  @doc """
-  Performs a GET request to the Heroku API and returns the result body. Used
-  by many of the `Happi.Heroku.*` modules.
-  """
+  @mydyno %Dyno{
+    id: "dyno-uuid",
+    name: "mydyno",
+    attach_url: nil,
+    command: "command that started dyno",
+    app: %Ref{id: "app-uuid", name: "myapp"},
+    release: %Release{id: "uuid", version: 1},
+    size: "small 1X",
+    state: "Rhode Island",
+    type: "type",
+    created_at: "2012-01-01T12:00:00Z",
+    updated_at: "2012-01-01T12:00:00Z"
+  }
+
   def get(_client, "/apps") do
     Poison.encode! [@myapp]
   end
   def get(_client, "/apps/no-such-app") do
     %Error{code: 404, id: "", message: "no such application", url: ""}
+  end
+  def get(_client, "/apps/myapp/dynos") do
+    Poison.encode! [@mydyno]
+  end
+  def get(_client, "/apps/myapp/dynos/" <> dyno_name) do
+    Poison.encode! %Dyno{@mydyno | name: dyno_name}
   end
   def get(_client, "/apps/" <> app_name) do
     Poison.encode! %App{@myapp | name: app_name}
