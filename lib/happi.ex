@@ -111,19 +111,19 @@ defmodule Happi do
   ## Examples
 
      iex> Happi.api_client |> Happi.list(Happi.Heroku.App)
-     [%Happi.Heroku.App{archived_at: "2012-01-01T12:00:00Z",
+     [%Happi.Heroku.App{archived_at: {{2012, 1, 1}, {12, 0, 0}},
       build_stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
       buildpack_provided_description: "Ruby/Rack",
-      created_at: "2012-01-01T12:00:00Z",
+      created_at: {{2012, 1, 1}, {12, 0, 0}},
       git_url: "https://git.heroku.com/example.git",
       id: "app-uuid", maintenance: false, name: "myapp",
       owner: %Happi.Heroku.User{email: "username@example.com", full_name: nil,
        id: "uuid"},
       region: %Happi.Heroku.Ref{id: "uuid", name: "us"},
-      released_at: "2012-01-01T12:00:00Z", repo_size: 0, slug_size: 0,
+      released_at: {{2012, 1, 1}, {12, 0, 0}}, repo_size: 0, slug_size: 0,
       space: %Happi.Heroku.Ref{id: "uuid", name: "nasa"},
       stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
-      updated_at: "2012-01-01T12:00:00Z",
+      updated_at: {{2012, 1, 1}, {12, 0, 0}},
       web_url: "https://example.herokuapp.com/"}]
 
      iex> Happi.api_client(app: "myapp") |> Happi.list(Happi.Heroku.Dyno)
@@ -132,14 +132,14 @@ defmodule Happi do
       app: %Happi.Heroku.Ref{id: "app-uuid", name: "myapp"},
       release: %Happi.Heroku.Release{id: "uuid", version: 1},
       size: "small 1X", type: "type", state: "Rhode Island",
-      created_at: "2012-01-01T12:00:00Z",
-      updated_at: "2012-01-01T12:00:00Z"}]
+      created_at: {{2012, 1, 1}, {12, 0, 0}},
+      updated_at: {{2012, 1, 1}, {12, 0, 0}}}]
   """
   @spec list(t, module) :: [map]
   def list(client, module) do
     client
     |> client.api.get(url_for(client, module))
-    |> decode!([struct(module)])
+    |> Happi.Transform.decode!([struct(module)])
   end
 
   @doc """
@@ -148,19 +148,19 @@ defmodule Happi do
   ## Examples
 
      iex> Happi.api_client |> Happi.get(Happi.Heroku.App, "myapp")
-     %Happi.Heroku.App{archived_at: "2012-01-01T12:00:00Z",
+     %Happi.Heroku.App{archived_at: {{2012, 1, 1}, {12, 0, 0}},
       build_stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
       buildpack_provided_description: "Ruby/Rack",
-      created_at: "2012-01-01T12:00:00Z",
+      created_at: {{2012, 1, 1}, {12, 0, 0}},
       git_url: "https://git.heroku.com/example.git",
       id: "app-uuid", maintenance: false, name: "myapp",
       owner: %Happi.Heroku.User{email: "username@example.com", full_name: nil,
        id: "uuid"},
       region: %Happi.Heroku.Ref{id: "uuid", name: "us"},
-      released_at: "2012-01-01T12:00:00Z", repo_size: 0, slug_size: 0,
+      released_at: {{2012, 1, 1}, {12, 0, 0}}, repo_size: 0, slug_size: 0,
       space: %Happi.Heroku.Ref{id: "uuid", name: "nasa"},
       stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
-      updated_at: "2012-01-01T12:00:00Z",
+      updated_at: {{2012, 1, 1}, {12, 0, 0}},
       web_url: "https://example.herokuapp.com/"}
 
      iex> Happi.api_client |> Happi.get(Happi.Heroku.App, "no-such-app")
@@ -170,7 +170,7 @@ defmodule Happi do
   def get(client, module, id) do
     client
     |> client.api.get(url_for(client, module, id))
-    |> decode!(struct(module))
+    |> Happi.Transform.decode!(struct(module))
   end
 
   @doc """
@@ -179,8 +179,8 @@ defmodule Happi do
   @spec create(t, module, map) :: map
   def create(client, module, data) do
     client
-    |> client.api.post(url_for(client, module), Poison.encode!(data))
-    |> decode!([struct(module)])
+    |> client.api.post(url_for(client, module), Happi.Transform.encode!(data))
+    |> Happi.Transform.decode!([struct(module)])
   end
 
   @doc """
@@ -189,8 +189,8 @@ defmodule Happi do
   @spec update(t, module, map) :: map
   def update(client, module, data) do
     client
-    |> client.api.patch(url_for(client, module), Poison.encode!(data))
-    |> decode!([struct(module)])
+    |> client.api.patch(url_for(client, module), Happi.Transform.encode!(data))
+    |> Happi.Transform.decode!([struct(module)])
   end
 
   @doc """
@@ -200,7 +200,7 @@ defmodule Happi do
   def delete(client, module, id) do
     client
     |> client.api.delete(url_for(client, module, id))
-    |> decode!([struct(module)])
+    |> Happi.Transform.decode!([struct(module)])
   end
 
   # ================ Private helpers ================
@@ -219,15 +219,5 @@ defmodule Happi do
     else
       url
     end
-  end
-
-  # Given either an API response JSON string or an `Error`, either parses
-  # the JSON as `decode_type` and returns that or returns the `Error`.
-  @spec decode!(String.t | Error.t, module | Enum.t) :: map
-  defp decode!(%Error{} = err, _) do
-    err
-  end
-  defp decode!(body, decode_type) do
-    body |> Poison.decode!(as: decode_type)
   end
 end
