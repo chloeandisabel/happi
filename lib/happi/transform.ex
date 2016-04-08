@@ -15,6 +15,16 @@ defmodule Happi.Transform do
   struct.
 
   Converts datetime strings into Erlang `date()` tuples.
+
+  ## Testing
+
+  iex> ~s({"a": 1, "created_at": "2016-04-01T15:16:17Z"})
+  ...> |> Happi.Transform.decode!(%{})
+  %{"a" => 1, "created_at" => {{2016, 4, 1}, {15, 16, 17}}}
+
+  iex> ~s({"a": 1, "inner": {"created_at": "2016-04-01T15:16:17Z"}})
+  ...> |> Happi.Transform.decode!(%{})
+  %{"a" => 1, "inner" => %{"created_at" => {{2016, 4, 1}, {15, 16, 17}}}}
   """
   @spec decode!(String.t | Error.t, module | Enum.t) :: map
   def decode!(%Error{} = err, _) do
@@ -36,52 +46,54 @@ defmodule Happi.Transform do
 
   # ================ Private helpers ================
 
-  defp datetime_strings_to_timestamps(data) when is_list(data) do
-    data |> Enum.map(&(datetime_strings_to_timestamps(&1)))
-  end
   defp datetime_strings_to_timestamps(data) do
-    timestamps = datetime_keys(data)
-    |> Enum.map(&({&1, Map.get(data, &1)}))
-    |> Enum.filter(fn({_, v}) -> v end)
-    |> Enum.map(fn({k, v}) ->
-      matches = Regex.run(@datetime_regex, v)
+    data |> transform(fn(_key, val) ->
+      matches = Regex.run(@datetime_regex, val)
       if matches do
         [_ | ts_strs] = matches
         [y, m, d, h, n, s] = ts_strs |> Enum.map(&String.to_integer/1)
-        ts = {{y, m, d}, {h, n, s}}
-        {k, ts}
+        {{y, m, d}, {h, n, s}}
       else
-        {k, v}
+        val
       end
     end)
-    |> Enum.into(%{})
-    Map.merge(data, timestamps)
   end
 
-  defp timestamps_to_datetime_strings(data) when is_list(data) do
-    data |> Enum.map(&(timestamps_to_datetime_strings(&1)))
-  end
   defp timestamps_to_datetime_strings(data) do
-    dt_strings = datetime_keys(data)
-    |> Enum.map(fn(k) ->        # convert to string, return {key, string}
-      val = Map.get(data, k)
-      case val do
-        {{y, m, d}, {h, n, s}} ->
-          s = :io_lib.format(@datetime_format, [y, m, d, h, n, s])
-          |> IO.iodata_to_binary
-          {k, s}
-        _ ->
-          {k, val}
-      end
+    data |> transform(fn
+      (_, {{y, m, d}, {h, n, s}}) ->
+        :io_lib.format(@datetime_format, [y, m, d, h, n, s])
+        |> IO.iodata_to_binary
+      (_, val) ->
+        val
     end)
-    |> Enum.into(%{})
-    Map.merge(data, dt_strings)
   end
 
-  defp datetime_keys(data) do
-    Map.keys(data) |> Enum.filter(fn(k) ->
-      s = to_string(k)
-      String.length(s) > 3 && String.slice(s, -3, 3) == "_at"
+  # Updates a map or list of maps by calling `f` on each datetime value
+  # (keys that end with "_at"). `f` must take two arguments: key and value.
+  # Works recursively.
+  defp transform(data, f) when is_list(data) do
+    data |> Enum.map(&(transform(&1, f)))
+  end
+  defp transform(data, f) do
+    data
+    |> Map.keys
+    |> Enum.reduce(data, fn(k, m) ->
+      v = Map.get(m, k)
+      cond do
+        datetime_key?(k) ->
+          Map.update!(m, k, &(f.(k, &1)))
+        is_map(v) ->
+          Map.update!(m, k, &(transform(&1, f)))
+        true ->
+          m
+      end
     end)
+  end
+
+  # Returns true if `key`, when converted to a string, ends in "_at".
+  defp datetime_key?(key) do
+    s = key |> to_string
+    String.length(s) > 3 && String.slice(s, -3, 3) == "_at"
   end
 end
