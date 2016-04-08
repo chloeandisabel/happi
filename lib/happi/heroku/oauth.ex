@@ -27,8 +27,8 @@ defmodule Happi.Heroku.OAuth do
     refresh_token: Token.t,
     scope: [String.t],
     user: User.t,
-    created_at: String.t,       # TODO datetime
-    updated_at: String.t        # TODO datetime
+    created_at: String.t,
+    updated_at: String.t
   }
 
   @spec regenerate(Happi.t, String.t) :: t

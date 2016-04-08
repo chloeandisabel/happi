@@ -6,7 +6,6 @@ defmodule Happi do
   """
 
   alias Happi.Endpoint
-  alias Happi.Heroku.{Error}
 
   defstruct base_url: nil,
     key: nil,

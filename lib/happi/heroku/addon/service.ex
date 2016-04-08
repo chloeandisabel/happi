@@ -22,8 +22,8 @@ defmodule Happi.Heroku.Addon.Service do
     state: String.t,
     supports_multiple_installations: boolean,
     supports_sharing: boolean,
-    created_at: String.t,       # TODO datetime
-    updated_at: String.t        # TODO datetime
+    created_at: String.t,
+    updated_at: String.t
   }
 end
 

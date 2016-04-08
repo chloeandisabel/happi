@@ -28,16 +28,16 @@ defmodule Happi.Heroku.Account do
     beta: boolean,
     email: String.t,
     id: String.t,
-    last_login: String.t,       # TODO datetime
+    last_login: String.t,
     name: String.t,
     sms_number: String.t,
     two_factor_authentication: boolean,
     verified: boolean,
     default_organization: String.t,
-    created_at: String.t,       # TODO datetime
-    updated_at: String.t,       # TODO datetime
-    suspended_at: String.t,     # TODO datetime
-    delinquent_at: String.t,    # TODO datetime
+    created_at: String.t,
+    updated_at: String.t,
+    suspended_at: String.t,
+    delinquent_at: String.t,
     password: String.t,         # only used when updating
     new_password: String.t      # ditto
   }

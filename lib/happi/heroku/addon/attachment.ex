@@ -20,8 +20,8 @@ defmodule Happi.Heroku.Addon.Attachment do
     name: String.t,
     addon: Addon.t,
     app: Ref.t,
-    created_at: String.t,       # TODO datetime
-    updated_at: String.t        # TODO datetime
+    created_at: String.t,
+    updated_at: String.t
   }
 
   @spec list(Happi.t) :: [t]

@@ -29,8 +29,8 @@ defmodule Happi.Heroku.Addon do
     plan: Ref.t,
     provider_id: String.t,
     web_url: String.t,
-    created_at: String.t,       # TODO datetime
-    updated_at: String.t        # TODO datetime
+    created_at: String.t,
+    updated_at: String.t
   }
 
   @doc """

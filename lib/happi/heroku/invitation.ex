@@ -16,7 +16,7 @@ defmodule Happi.Heroku.Invitation do
 
   @type t :: %__MODULE__{
     user: User.t,
-    created_at: String.t        # TODO datetime
+    created_at: String.t
   }
 
   @spec invite(Happi.t, String.t, String.t) :: t

@@ -20,8 +20,8 @@ defmodule Happi.Heroku.Log.Drain do
     token: String.t,
     url: String.t,
     addon: Ref.t,
-    created_at: String.t,       # TODO datetime
-    updated_at: String.t        # TODO datetime
+    created_at: String.t,
+    updated_at: String.t
   }
 end
 

@@ -40,10 +40,10 @@ defmodule Happi.Heroku.App do
     space: Ref.t,
     stack: Ref.t,
     web_url: String.t,
-    released_at: String.t,      # TODO datetime
-    archived_at: String.t,      # TODO datetime
-    created_at: String.t,       # TODO datetime
-    updated_at: String.t        # TODO datetime
+    released_at: String.t,
+    archived_at: String.t,
+    created_at: String.t,
+    updated_at: String.t
   }
 end
 

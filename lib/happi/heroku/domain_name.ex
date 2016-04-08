@@ -20,7 +20,7 @@ defmodule Happi.Heroku.DomainName do
     base_domain: String.t,
     domain: String.t,
     default: integer,
-    created_at: String.t,       # TODO datetime
-    updated_at: String.t        # TODO datetime
+    created_at: String.t,
+    updated_at: String.t
   }
 end

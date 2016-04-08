@@ -22,8 +22,8 @@ defmodule Happi.Heroku.Domain do
     cname: String.t,
     hostname: String.t,
     kind: String.t,
-    created_at: String.t,       # TODO datetime
-    updated_at: String.t        # TODO datetime
+    created_at: String.t,
+    updated_at: String.t
   }
 end
 
