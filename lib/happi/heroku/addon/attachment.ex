@@ -73,3 +73,8 @@ defmodule Happi.Heroku.Addon.Attachment do
     |> Poison.deocde!(as: %__MODULE__{})
   end
 end
+
+defimpl Happi.Endpoint, for: Happi.Heroku.Addon.Attachment do
+  def endpoint_url(_), do: "/addon-attachments"
+  def app?(_), do: false
+end

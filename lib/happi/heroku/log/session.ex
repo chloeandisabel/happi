@@ -21,7 +21,7 @@ defmodule Happi.Heroku.Log.Session do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Session do
+defimpl Happi.Endpoint, for: Happi.Heroku.Log.Session do
   def endpoint_url(_), do: "/log-sessions"
   def app?(_), do: true
 end

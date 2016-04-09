@@ -25,7 +25,7 @@ defmodule Happi.Heroku.Log.Drain do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Drain do
+defimpl Happi.Endpoint, for: Happi.Heroku.Log.Drain do
   def endpoint_url(_), do: "/log-drains"
   def app?(_), do: true
 end

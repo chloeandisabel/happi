@@ -10,3 +10,8 @@ defmodule Happi.Heroku.OAuth.Token do
     expires_in: integer
   }
 end
+
+defimpl Happi.Endpoint, for: Happi.Heroku.Oauth.Token do
+  def endpoint_url(_), do: "/oauth/tokens"
+  def app?(_), do: false
+end
