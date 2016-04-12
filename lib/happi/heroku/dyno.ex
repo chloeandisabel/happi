@@ -1,10 +1,10 @@
 defmodule Happi.Heroku.Dyno do
-  
   @moduledoc """
   Heroku Dyno.
   """
   
   alias Happi.Heroku.{Ref, Release}
+  use Happi.Resource
 
   @derive [Poison.Encoder]
   

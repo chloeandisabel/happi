@@ -1,8 +1,9 @@
 defmodule Happi.Heroku.Credit do
-  
   @moduledoc """
   Heroku credit.
   """
+
+  use Happi.Resource
 
   @derive [Poison.Encoder]
 

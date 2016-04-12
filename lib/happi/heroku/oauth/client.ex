@@ -1,4 +1,5 @@
 defmodule Happi.Heroku.OAuth.Client do
+  use Happi.Resource
   
   defstruct id: "",
     name: "",

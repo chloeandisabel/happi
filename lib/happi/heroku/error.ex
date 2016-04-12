@@ -1,5 +1,4 @@
 defmodule Happi.Heroku.Error do
-  
   @moduledoc """
   Heroku API error message.
   """

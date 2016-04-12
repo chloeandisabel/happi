@@ -1,11 +1,10 @@
 defmodule Happi.Heroku.Log.Session do
-  
   @moduledoc """
   Heroku log drain.
-
-  Only the `Happi.create` endpoint makes sense.
   """
   
+  use Happi.Resource, only: [:create]
+
   @derive [Poison.Encoder]
 
   defstruct id: "",

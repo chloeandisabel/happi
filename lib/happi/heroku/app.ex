@@ -1,10 +1,10 @@
 defmodule Happi.Heroku.App do
-  
   @moduledoc """
   Heroku Application.
   """
 
   alias Happi.Heroku.{Ref, User}
+  use Happi.Resource
 
   @derive [Poison.Encoder]
 

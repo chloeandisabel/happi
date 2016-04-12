@@ -1,4 +1,5 @@
 defmodule Happi.Heroku.OAuth.Token do
+  use Happi.Resource
   
   defstruct id: "",
     token: "",

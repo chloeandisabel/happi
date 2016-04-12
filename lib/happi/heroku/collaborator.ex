@@ -1,10 +1,10 @@
 defmodule Happi.Heroku.Collaborator do
-  
   @moduledoc """
   Heroku app collaborator.
   """
   
   alias Happi.Heroku.{Ref, User}
+  use Happi.Resource
 
   @derive [Poison.Encoder]
 

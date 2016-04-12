@@ -1,5 +1,4 @@
 defmodule Happi.Transform do
-  
   @moduledoc """
   Functions that help with conversion between JSON and our structs.
   """

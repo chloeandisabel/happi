@@ -1,5 +1,4 @@
 defmodule Happi.Heroku.SourceBlob do
-  
   @moduledoc """
   Heroku source blob.
   """

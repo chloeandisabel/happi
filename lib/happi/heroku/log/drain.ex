@@ -1,10 +1,10 @@
 defmodule Happi.Heroku.Log.Drain do
-  
   @moduledoc """
   Heroku log drain.
   """
   
   alias Happi.Heroku.Ref
+  use Happi.Resource
 
   @derive [Poison.Encoder]
 

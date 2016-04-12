@@ -1,5 +1,4 @@
 defmodule Happi.API do
-  
   @moduledoc """
   Functions that implement HTTP methods. Used by `Happi` functions. They all
   take a `Happi` struct as their first argument.

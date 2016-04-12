@@ -1,13 +1,10 @@
 defmodule Happi.Heroku.Invitation do
-  
   @moduledoc """
   Heroku invitation.
-
-  Only the `Happi.get` endpoint is useful. For all other interactions, use
-  the methods in this module.
   """
 
   alias Happi.Heroku.User
+  use Happi.Resource, only: [:get]
 
   @derive [Poison.Encoder]
   

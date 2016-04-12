@@ -1,8 +1,9 @@
 defmodule Happi.Heroku.Buildpack do
-  
   @moduledoc """
   Heroku buildpack.
   """
+
+  use Happi.Resource
   
   defstruct url: "",
     name: "",

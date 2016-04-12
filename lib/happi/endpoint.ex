@@ -1,5 +1,4 @@
 defprotocol Happi.Endpoint do
-
   @moduledoc """
   This protocol defines two methods that together determine the URL for a
   resource.

@@ -1,5 +1,4 @@
 defmodule Happi.Heroku.Release do
-  
   @moduledoc """
   Heroku release description.
   """

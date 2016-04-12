@@ -1,5 +1,4 @@
 defmodule Happi.Heroku.User do
-  
   @moduledoc """
   Heroku id/name reference structure.
   """

@@ -1,11 +1,11 @@
 defmodule Happi.Heroku.OAuth do
-  
   @moduledoc """
   Heroku OAuth authorization.
   """
   
   alias Happi.Heroku.User
   alias Happi.Heroku.OAuth.{Client, Grant, Token}
+  use Happi.Resource
 
   @derive [Poison.Encoder]
 

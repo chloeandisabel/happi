@@ -1,10 +1,10 @@
 defmodule Happi.Heroku.Formation do
-  
   @moduledoc """
   Heroku formation.
   """
   
   alias Happi.Heroku.Ref
+  use Happi.Resource
 
   @derive [Poison.Encoder]
 

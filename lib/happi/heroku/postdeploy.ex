@@ -1,5 +1,4 @@
 defmodule Happi.Heroku.Postdeploy do
-  
   @moduledoc """
   Heroku postdeploy structure.
   """

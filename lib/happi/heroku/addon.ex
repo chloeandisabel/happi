@@ -1,11 +1,11 @@
 defmodule Happi.Heroku.Addon do
-  
   @moduledoc """
   Heroku application add-on. See `Happi.Heroku.Addon.Attachment`.
   """
   
   alias Happi.Heroku.Ref
   alias Happi.Heroku.Addon.Service
+  use Happi.Resource
 
   @derive [Poison.Encoder]
   
@@ -37,18 +37,18 @@ defmodule Happi.Heroku.Addon do
   Returns all addons, not just those for the app stored in `client`.
   """
 
-  @spec list(Happi.t) :: [t]
-  def list(client) do
+  @spec list_all(Happi.t) :: [t]
+  def list_all(client) do
     client
     |> Happi.API.get("/addons")
     |> Poison.decode!(as: [%__MODULE__{}])
   end
 
   @doc """
-  Returns a specific addon. `Happi.get` won't work.
+  Returns a specific addon.
   """
-  @spec get(Happi.t, String.t) :: t
-  def get(client, name_or_id) do
+  @spec get_addon(Happi.t, String.t) :: t
+  def get_addon(client, name_or_id) do
     client
     |> Happi.API.get("/addons/#{name_or_id}")
     |> Poison.decode!(as: %__MODULE__{})

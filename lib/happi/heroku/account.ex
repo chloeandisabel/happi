@@ -1,8 +1,9 @@
 defmodule Happi.Heroku.Account do
-  
   @moduledoc """
   Heroku Account.
   """
+
+  use Happi.Resource
 
   @derive [Poison.Encoder]
 

@@ -1,5 +1,4 @@
 defmodule Happi.Heroku.DomainName do
-  
   @moduledoc """
   Heroku domain name.
   """

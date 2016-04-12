@@ -1,9 +1,10 @@
 defmodule Happi.Heroku.Addon.Service do
-  
   @moduledoc """
   Heroku add-on services.
   """
   
+  use Happi.Resource
+
   defstruct id: "",
     name: "",
     cli_plugin_name: "",

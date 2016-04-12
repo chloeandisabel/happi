@@ -1,10 +1,10 @@
 defmodule Happi.Heroku.Build do
-  
   @moduledoc """
   Heroku build structure.
   """
   
   alias Happi.Heroku.{IdRef, Buildpack, SourceBlob, User}
+  use Happi.Resource
 
   @derive [Poison.Encoder]
   

@@ -1,8 +1,9 @@
 defmodule Happi.Heroku.Key do
-  
   @moduledoc """
   Heroku key.
   """
+
+  use Happi.Resource
   
   @derive [Poison.Encoder]
 

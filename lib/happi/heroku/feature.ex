@@ -1,10 +1,10 @@
 defmodule Happi.Heroku.Feature do
-  
   @moduledoc """
   Heroku Feature.
   """
 
   @derive [Poison.Encoder]
+  use Happi.Resource
 
   defstruct id: "",
     name: "",
