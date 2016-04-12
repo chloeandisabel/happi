@@ -25,6 +25,10 @@ defmodule Happi.Transform do
   iex> ~s({"a": 1, "inner": {"created_at": "2016-04-01T15:16:17Z"}})
   ...> |> Happi.Transform.decode!(%{})
   %{"a" => 1, "inner" => %{"created_at" => {{2016, 4, 1}, {15, 16, 17}}}}
+
+  iex> ~s({"a": 1, "created_at": null})
+  ...> |> Happi.Transform.decode!(%{})
+  %{"a" => 1, "created_at" => nil}
   """
   @spec decode!(String.t | Error.t, module | Enum.t) :: map
   def decode!(%Error{} = err, _) do
@@ -47,15 +51,18 @@ defmodule Happi.Transform do
   # ================ Private helpers ================
 
   defp datetime_strings_to_timestamps(data) do
-    data |> transform(fn(_key, val) ->
-      matches = Regex.run(@datetime_regex, val)
-      if matches do
-        [_ | ts_strs] = matches
-        [y, m, d, h, n, s] = ts_strs |> Enum.map(&String.to_integer/1)
-        {{y, m, d}, {h, n, s}}
-      else
-        val
-      end
+    data |> transform(fn
+      (_key, nil) ->
+        nil
+      (_key, val) ->
+        matches = Regex.run(@datetime_regex, val)
+        if matches do
+          [_ | ts_strs] = matches
+          [y, m, d, h, n, s] = ts_strs |> Enum.map(&String.to_integer/1)
+          {{y, m, d}, {h, n, s}}
+        else
+          val
+        end
     end)
   end
 
