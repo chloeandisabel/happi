@@ -37,5 +37,5 @@ end
 
 defimpl Happi.Endpoint, for: Happi.Heroku.Invitation do
   def endpoint_url(_), do: "/invitations"
-  def app?(_), do: false
+  def app_resource?(_), do: false
 end

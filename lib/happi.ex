@@ -213,7 +213,7 @@ defmodule Happi do
   defp url_for(client, module) do
     s = struct(module)
     url = Endpoint.endpoint_url(s)
-    if Endpoint.app?(s) do
+    if Endpoint.app_resource?(s) do
       "/apps/#{client.app}#{url}"
     else
       url

@@ -29,5 +29,5 @@ end
 
 defimpl Happi.Endpoint, for: Happi.Heroku.Domain do
   def endpoint_url(_), do: "/domains"
-  def app?(_), do: true
+  def app_resource?(_), do: true
 end

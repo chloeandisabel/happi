@@ -18,5 +18,5 @@ end
 
 defimpl Happi.Endpoint, for: Happi.Heroku.Buildpack do
   def endpoint_url(_), do: "/buildpack-installations"
-  def app?(_), do: true
+  def app_resource?(_), do: true
 end

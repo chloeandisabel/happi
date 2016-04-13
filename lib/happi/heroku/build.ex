@@ -37,5 +37,5 @@ end
 
 defimpl Happi.Endpoint, for: Happi.Heroku.Build do
   def endpoint_url(_), do: "/builds"
-  def app?(_), do: true
+  def app_resource?(_), do: true
 end

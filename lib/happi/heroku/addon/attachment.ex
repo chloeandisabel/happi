@@ -48,5 +48,5 @@ end
 
 defimpl Happi.Endpoint, for: Happi.Heroku.Addon.Attachment do
   def endpoint_url(_), do: "/addon-attachments"
-  def app?(_), do: false
+  def app_resource?(_), do: false
 end

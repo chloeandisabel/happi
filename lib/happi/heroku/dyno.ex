@@ -51,5 +51,5 @@ end
 
 defimpl Happi.Endpoint, for: Happi.Heroku.Dyno do
   def endpoint_url(_), do: "/dynos"
-  def app?(_), do: true
+  def app_resource?(_), do: true
 end

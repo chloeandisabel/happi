@@ -14,5 +14,5 @@ end
 
 defimpl Happi.Endpoint, for: Happi.Heroku.Oauth.Client do
   def endpoint_url(_), do: "/oauth/clients"
-  def app?(_), do: false
+  def app_resource?(_), do: false
 end

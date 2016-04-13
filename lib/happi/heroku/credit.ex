@@ -26,5 +26,5 @@ end
 
 defimpl Happi.Endpoint, for: Happi.Heroku.Credit do
   def endpoint_url(_), do: "/account/credits"
-  def app?(_), do: false
+  def app_resource?(_), do: false
 end

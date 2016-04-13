@@ -8,5 +8,5 @@ end
 
 defimpl Happi.Endpoint, for: Happi.Heroku.ConfigVar do
   def endpoint_url(_), do: "/config-vars"
-  def app?(_), do: true
+  def app_resource?(_), do: true
 end
