@@ -25,46 +25,71 @@ defmodule Happi.Resource do
 
   ## Example
 
-      iex> Happi.Heroku.App.list(Happi.api_client(app: "myapp"))
-      [%Happi.Heroku.App{archived_at: {{2012, 1, 1}, {12, 0, 0}},
-        build_stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
-        buildpack_provided_description: "Ruby/Rack",
-        created_at: {{2012, 1, 1}, {12, 0, 0}},
-        git_url: "https://git.heroku.com/example.git", id: "app-uuid",
-        maintenance: false, name: "myapp",
-        owner: %Happi.Heroku.User{email: "username@example.com",
-         full_name: nil, id: "uuid"},
-        region: %Happi.Heroku.Ref{id: "uuid", name: "us"},
-        released_at: {{2012, 1, 1}, {12, 0, 0}}, repo_size: 0,
-        slug_size: 0, space: %Happi.Heroku.Ref{id: "uuid", name: "nasa"},
-        stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
-        updated_at: {{2012, 1, 1}, {12, 0, 0}},
-        web_url: "https://example.herokuapp.com/"}]
+     iex> Happi.Heroku.App.list(Happi.api_client(app: "myapp"))
+     [%Happi.Heroku.App{archived_at: {{2012, 1, 1}, {12, 0, 0}},
+      build_stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
+      buildpack_provided_description: "Ruby/Rack",
+      created_at: {{2012, 1, 1}, {12, 0, 0}},
+      git_url: "https://git.heroku.com/example.git",
+      id: "app-uuid", maintenance: false, name: "myapp",
+      owner: %Happi.Heroku.User{email: "username@example.com", full_name: nil,
+       id: "uuid"},
+      region: %Happi.Heroku.Ref{id: "uuid", name: "us"},
+      released_at: {{2012, 1, 1}, {12, 0, 0}}, repo_size: 0, slug_size: 0,
+      space: %Happi.Heroku.Ref{id: "uuid", name: "nasa"},
+      stack: %Happi.Heroku.Ref{id: "uuid", name: "cedar-14"},
+      updated_at: {{2012, 1, 1}, {12, 0, 0}},
+      web_url: "https://example.herokuapp.com/"}]
   """
 
+  @resource_funcs [
+    {:list, &__MODULE__.def_list/0},
+    {:get, &__MODULE__.def_get/0},
+    {:create, &__MODULE__.def_create/0},
+    {:update, &__MODULE__.def_update/0},
+    {:delete, &__MODULE__.def_delete/0}
+  ]
+
   defmacro __using__(opts) do
+    onlies = Keyword.get(opts, :only)
+    exceptions = Keyword.get(opts, :except)
+
+    @resource_funcs
+    |> Enum.filter(fn({a, _}) -> should_define?(onlies, exceptions, a) end)
+    |> Enum.map(fn({_, f}) -> f.() end)
+  end
+
+  def def_list do
     quote do
-      if Happi.Resource.should_define?(unquote(opts), :list) do
-        def list(client), do: Happi.list(client, __MODULE__)
-      end
-      if Happi.Resource.should_define?(unquote(opts), :get) do
-        def get(client, id), do: Happi.get(client, __MODULE__, id)
-      end
-      if Happi.Resource.should_define?(unquote(opts), :create) do
-        def create(client, data), do: Happi.create(client, __MODULE__, data)
-      end
-      if Happi.Resource.should_define?(unquote(opts), :update) do
-        def update(client, data), do: Happi.update(client, __MODULE__, data)
-      end
-      if Happi.Resource.should_define?(unquote(opts), :delete) do
-        def delete(client, id), do: Happi.delete(client, __MODULE__, id)
-      end
+      def list(client), do: Happi.list(client, __MODULE__)
     end
   end
 
-  def should_define?(opts, atom) do
-    onlies = Keyword.get(opts, :only)
-    exceptions = Keyword.get(opts, :except)
+  def def_get do
+    quote do
+      def get(client, id), do: Happi.get(client, __MODULE__, id)
+    end
+  end
+
+  def def_create do
+    quote do
+      def create(client, data), do: Happi.create(client, __MODULE__, data)
+    end
+  end
+
+  def def_update do
+    quote do
+      def update(client, data), do: Happi.update(client, __MODULE__, data)
+    end
+  end
+
+  def def_delete do
+    quote do
+      def delete(client, id), do: Happi.delete(client, __MODULE__, id)
+    end
+  end
+
+  defp should_define?(onlies, exceptions, atom) do
     cond do
       exceptions && exceptions |> Enum.member?(atom) -> true
       onlies && !(onlies |> Enum.member?(atom)) -> false
