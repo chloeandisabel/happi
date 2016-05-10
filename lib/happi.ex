@@ -19,6 +19,7 @@ defmodule Happi do
     app: String.t
   }
 
+  @api_module Application.get_env(:happi, :api)
   @api_url "https://api.heroku.com"
 
   # ================ Client creation ================
@@ -45,21 +46,20 @@ defmodule Happi do
      * `:api_key` - Your Heroku API key. When not specified, it is read from
        the environment variable `$HEROKU_API_KEY`.
 
-     * `:api_module` - The module that implements the low-level HTTP `get`,
-       `put`, `post`, etc. functions. When not specified, it is read from
-       the config file
-
      * `:app` - A Heroku application name or id string. When not specified,
        the environment variable `$HAPPI_HEROKU_APP` is used.
 
   ## Examples
 
+     (The API module is Happi.MockAPI in these examples because that's what
+     is used in the test environment when these examples are run as tests.)
+
      iex> Happi.api_client(api_key: "secret")
      %Happi{api: Happi.MockAPI, app: nil, base_url: "https://api.heroku.com",
        key: "secret"}
 
-     iex> Happi.api_client(api_key: "secret", api_module: SomeModule)
-     %Happi{api: SomeModule, app: nil, base_url: "https://api.heroku.com",
+     iex> Happi.api_client(api_key: "secret")
+     %Happi{api: Happi.MockAPI, app: nil, base_url: "https://api.heroku.com",
        key: "secret"}
 
      iex> Happi.api_client(api_key: "secret", app: "myapp")
@@ -78,9 +78,8 @@ defmodule Happi do
   @spec api_client(Keyword.t) :: t
   def api_client(options \\ []) do
     key = Keyword.get(options, :api_key, System.get_env("HEROKU_API_KEY"))
-    mod = Keyword.get(options, :api_module, Application.get_env(:happi, :api))
     app = Keyword.get(options, :app, System.get_env("HAPPI_HEROKU_APP"))
-    %Happi{base_url: @api_url, key: key, api: mod, app: app}
+    %Happi{api: @api_module, app: app, base_url: @api_url, key: key}
   end
 
   # ================ Heroku API endpoints ================
