@@ -69,6 +69,22 @@ iex> ds = client |> Happi.Heroku.Dyno.list
 Note that we didn't have to pass in the app name or id because it's already
 stored in the client.
 
+Let's fetch a particular dyno.
+
+```elixir
+iex> d = client |> Happi.Heroku.Dyno.get("my_dyno_name.1")
+#=> %Happi.Heroku.Dyno{...}
+```
+
+How many dynos do we have of each dyno type?
+
+```elixir
+iex> client |> Happi.Heroku.Dyno.list |> Enum.reduce(%{}, fn d, m ->
+...>   Map.put(m, d.type, Map.get(m, d.type, 0) + 1)
+...> end
+#=> %{"web" => 2, "schedule_workers" => 2, "others" => 5}
+```
+
 Want to spawn multiple requests in parallel? That's easy with Elixir's
 `Task` module. In this example we call `update/1` on all our Dynos. This
 example is a no-op since the updated struct is the same as the original.
