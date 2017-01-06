@@ -19,7 +19,7 @@ defmodule Happi do
     app: String.t
   }
 
-  @api_module Application.get_env(:happi, :api)
+  @api_module Application.get_env(:happi, :api, Happi.API)
   @api_url "https://api.heroku.com"
 
   # ================ Client creation ================
