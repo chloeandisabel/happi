@@ -81,6 +81,7 @@ defmodule Happi.API do
   defp headers(client) do
     %{"Authorization": "Bearer #{client.key}",
       "Accept": "application/vnd.heroku+json; version=3",
-		  "User-Agent": "#{Mix.Project.config[:app]}/#{Mix.Project.config[:version]}"}
+      "Content-Type": "application/json",
+      "User-Agent": "#{Mix.Project.config[:app]}/#{Mix.Project.config[:version]}"}
   end
 end
