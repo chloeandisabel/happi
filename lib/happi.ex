@@ -29,7 +29,7 @@ defmodule Happi do
   Heroku API. The client contains information needed to connect to Heroku's
   API.
 
-  The client struct also optinally contains an application id or name which
+  The client struct also optionally contains an application id or name which
   will be used to retrieve application resources such as dynos. Storing an
   app id or name in the client means that you don't have to pass it in to
   every call about application resources such as dynos, collaborators, and
