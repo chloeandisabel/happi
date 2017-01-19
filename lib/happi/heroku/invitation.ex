@@ -19,18 +19,17 @@ defmodule Happi.Heroku.Invitation do
   @spec invite(Happi.t, String.t, String.t) :: t
   def invite(client, email, name \\ nil) do
     client
-    |> Happi.API.post("/invitations",
-                      Poison.encode!(%{email: email, name: name}))
+    |> client.api.post("/invitations", Poison.encode!(%{email: email, name: name}))
     |> Poison.decode!(as: %__MODULE__{})
   end
 
   @spec finalize(Happi.t, String.t, String.t, boolean) :: t
   def finalize(client, token, password, receive_newsletter \\ false) do
     client
-    |> Happi.API.patch("/invitations/#{token}",
-                       Poison.encode!(%{password: password,
-                                        password_confirmation: password,
-                                        receive_newsletter: receive_newsletter}))
+    |> client.api.patch("/invitations/#{token}",
+                        Poison.encode!(%{password: password,
+                                         password_confirmation: password,
+                                         receive_newsletter: receive_newsletter}))
     |> Poison.decode!(as: %__MODULE__{})
   end
 end

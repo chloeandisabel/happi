@@ -40,7 +40,7 @@ defmodule Happi.Heroku.Addon do
   @spec list_all(Happi.t) :: [t]
   def list_all(client) do
     client
-    |> Happi.API.get("/addons")
+    |> client.api.get("/addons")
     |> Poison.decode!(as: [%__MODULE__{}])
   end
 
@@ -50,7 +50,7 @@ defmodule Happi.Heroku.Addon do
   @spec get_addon(Happi.t, String.t) :: t
   def get_addon(client, name_or_id) do
     client
-    |> Happi.API.get("/addons/#{name_or_id}")
+    |> client.api.get("/addons/#{name_or_id}")
     |> Poison.decode!(as: %__MODULE__{})
   end
 end

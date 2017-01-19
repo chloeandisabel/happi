@@ -7,7 +7,7 @@ defmodule Happi.Heroku.Schema do
   @spec get(Happi.t) :: Map.t
   def get(client) do
     client
-    |> Happi.API.get("/schema")
+    |> client.api.get("/schema")
     |> Poison.decode!
   end
 end

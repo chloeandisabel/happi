@@ -34,7 +34,7 @@ defmodule Happi.Heroku.OAuth do
   @spec regenerate(Happi.t, String.t) :: t
   def regenerate(client, oauth_authorization_id) do
     client
-    |> Happi.API.post("/oauth/authorizations/#{oauth_authorization_id}/actions/regenerate-tokens", nil)
+    |> client.api.post("/oauth/authorizations/#{oauth_authorization_id}/actions/regenerate-tokens", nil)
     |> Poison.decode!(as: %__MODULE__{})
   end
 end

@@ -99,7 +99,6 @@ defmodule Happi.Transform do
 
   # Returns true if `key`, when converted to a string, ends in "_at".
   defp datetime_key?(key) do
-    s = key |> to_string
-    String.length(s) > 3 && String.slice(s, -3, 3) == "_at"
+    key |> to_string |> String.ends_with?("_at")
   end
 end

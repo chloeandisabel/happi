@@ -27,21 +27,21 @@ defmodule Happi.Heroku.Addon.Attachment do
   @spec list(Happi.t, String.t) :: [t]
   def list(client, addon_id_or_name) do
     client
-    |> Happi.API.get("/addons/#{addon_id_or_name}/addon-attachments")
+    |> client.api.get("/addons/#{addon_id_or_name}/addon-attachments")
     |> Poison.decode!(as: [%__MODULE__{}])
   end
 
   @spec list_for_app(Happi.t) :: [t]
   def list_for_app(client) do
     client
-    |> Happi.API.get("/apps/#{client.app.id}/addon-attachments")
+    |> client.api.get("/apps/#{client.app.id}/addon-attachments")
     |> Poison.decode!(as: [%__MODULE__{}])
   end
 
   @spec get_for_app(Happi.t, String.t) :: t
   def get_for_app(client, addon_id) do
     client
-    |> Happi.API.get("/apps/#{client.app.id}/addon-attachments/#{addon_id}")
+    |> client.api.get("/apps/#{client.app.id}/addon-attachments/#{addon_id}")
     |> Poison.decode!(as: %__MODULE__{})
   end
 end

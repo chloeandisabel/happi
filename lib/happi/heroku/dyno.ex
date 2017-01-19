@@ -37,14 +37,14 @@ defmodule Happi.Heroku.Dyno do
   @spec restart(Happi.t, String.t) :: :ok
   def restart(client, id_or_name) do
     client
-    |> Happi.API.delete("/apps/#{client.app.name}/dynos/#{id_or_name}")
+    |> client.api.delete("/apps/#{client.app.name}/dynos/#{id_or_name}")
     :ok                         # TODO handle error return codes
   end
 
   @spec restart_all(Happi.t) :: :ok
   def restart_all(client) do
     client
-    |> Happi.API.delete("/apps/#{client.app.name}/dynos")
+    |> client.api.delete("/apps/#{client.app.name}/dynos")
     :ok                         # TODO handle error return codes
   end
 end
