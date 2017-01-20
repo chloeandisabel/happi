@@ -1,48 +1,47 @@
 # Happi
 
-Happi is a
+Happi is a collection of Elixir structs for
+the
 [Heroku API](https://devcenter.heroku.com/articles/platform-api-reference)
-client written in [Elixir](http://elixir-lang.org/).
+useable by the [Napper](https://github.com/chloeandisabel/napper) JSON REST
+API application.
 
-Happi defines structs for most of the resources exposed by Heroku's API as
-well as the functions `list/2`, `get/3`, `create/3`, `update/3`, and
-`delete/3` as appropriate. Some structs come with additional functions as
-dictated by the Heroku API.
+Happi defines structs for most of the resources exposed by Heroku's API, and
+a few functions that are above and beyond the standard
+list/get/update/delete REST API calls.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be
-installed as:
+The package can be installed by adding Happi to your list of dependencies
+in `mix.exs`. You'll also need Napper.
 
-  1. Add happi to your list of dependencies in `mix.exs`:
-
-        def deps do
-          [{:happi, "~> 0.0.1"}]
-        end
-
-  2. Ensure happi is started before your application:
-
-        def application do
-          [applications: [:happi]]
-        end
+```elixir
+def deps do
+  [{:happi, git: "https://github.com/chloeandisabel/happi.git"},
+   {:napper, git: "https://github.com/chloeandisabel/napper.git"}]
+end
+```
 
 ## Using Happi
 
-First we create a client.
+First we create a client using Napper. This example assumes we've used our
+config file to configure Napper properly. Napper comes with an example
+config file for the Heroku API.
 
 ```elixir
-iex> client = Happi.api_client(api_key: "secret", app: "app-name-or-id")
+iex> client = Napper.api_client
 ```
 
-`api_client/1` returns a `Happi.t` struct. The API key argument is optional;
-if it is not passed in then the environment variable `$HEROKU_API_KEY` is
-used. The app argument is an app name or id which is optional and will
-default to `$HAPPI_HEROKU_APP` or nil.
+The example config file defines a default application name and the "/apps"
+endpoint. This means that when using a struct such as `Dyno` you don't need
+to specify the application name. To use a different application, specify a
+different `master_id` in the client.
 
-Many Heroku API structs such as `Dyno` are resources within an `App`.
-Instead of having to obtain and pass around the `App` name or id, keeping it
-in the client struct reduces the number of arguments that need to be passed
-around.
+```elixir
+iex> client = Napper.api_client(master_id: "another_app_name")
+iex> # ...or, starting with an existing client...
+iex> client = %{client | master_id: "another_app_name"}
+```
 
 Heroku's API limits the number of requests per hour. Let's find out how many
 we have left:
@@ -76,7 +75,8 @@ iex> d = client |> Happi.Heroku.Dyno.get("my_dyno_name.1")
 #=> %Happi.Heroku.Dyno{...}
 ```
 
-How many dynos do we have of each dyno type?
+How many dynos do we have of each dyno type? (You could also use the
+`Formation` resource to get this information a bit easier.)
 
 ```elixir
 iex> client |> Happi.Heroku.Dyno.list |> Enum.reduce(%{}, fn d, m ->
@@ -84,22 +84,6 @@ iex> client |> Happi.Heroku.Dyno.list |> Enum.reduce(%{}, fn d, m ->
 ...> end
 #=> %{"web" => 2, "schedule_workers" => 2, "others" => 5}
 ```
-
-Want to spawn multiple requests in parallel? That's easy with Elixir's
-`Task` module. In this example we call `update/1` on all our Dynos. This
-example is a no-op since the updated struct is the same as the original.
-
-```elixir
-iex> f = fn(d) -> Task.async(client |> Happi.Heroku.Dyno.update(d)) end
-iex> ds |> Enum.map(f) |> Enum.map(&Task.await/1)
-```
-
-## Configuration
-
-The only Happi application configuration option is `:api` which specifies
-the module that implements the basic HTTP `get`, `post`, `delete`, etc.
-commands. This allows the tests to use a mock API. Normally you won't have
-to change this value, and the default value is defined in `mix.exs`.
 
 ## To Do
 
