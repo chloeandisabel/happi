@@ -5,7 +5,7 @@ defmodule Happi.Heroku.Addon do
   
   alias Happi.Heroku.Ref
   alias Happi.Heroku.Addon.Service
-  use Happi.Resource
+  use Napper.Resource
 
   @derive [Poison.Encoder]
   
@@ -55,7 +55,7 @@ defmodule Happi.Heroku.Addon do
   end
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Addon do
+defimpl Napper.Endpoint, for: Happi.Heroku.Addon do
+  def under_master_resource?(_), do: true
   def endpoint_url(_), do: "/addons"
-  def app_resource?(_), do: true
 end

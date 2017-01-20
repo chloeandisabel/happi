@@ -3,7 +3,7 @@ defmodule Happi.Heroku.Log.Session do
   Heroku log drain.
   """
   
-  use Happi.Resource, only: [:create]
+  use Napper.Resource, only: [:create]
 
   @derive [Poison.Encoder]
 
@@ -20,7 +20,7 @@ defmodule Happi.Heroku.Log.Session do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Log.Session do
+defimpl Napper.Endpoint, for: Happi.Heroku.Log.Session do
+  def under_master_resource?(_), do: true
   def endpoint_url(_), do: "/log-sessions"
-  def app_resource?(_), do: true
 end

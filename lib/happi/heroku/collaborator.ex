@@ -4,7 +4,7 @@ defmodule Happi.Heroku.Collaborator do
   """
   
   alias Happi.Heroku.{Ref, User}
-  use Happi.Resource
+  use Napper.Resource
 
   @derive [Poison.Encoder]
 
@@ -23,7 +23,7 @@ defmodule Happi.Heroku.Collaborator do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Collaborator do
+defimpl Napper.Endpoint, for: Happi.Heroku.Collaborator do
+  def under_master_resource?(_), do: true
   def endpoint_url(_), do: "/collaborators"
-  def app_resource?(_), do: true
 end

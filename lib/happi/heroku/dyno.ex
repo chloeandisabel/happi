@@ -4,7 +4,7 @@ defmodule Happi.Heroku.Dyno do
   """
   
   alias Happi.Heroku.{Ref, Release}
-  use Happi.Resource
+  use Napper.Resource
 
   @derive [Poison.Encoder]
   
@@ -49,7 +49,7 @@ defmodule Happi.Heroku.Dyno do
   end
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Dyno do
+defimpl Napper.Endpoint, for: Happi.Heroku.Dyno do
+  def under_master_resource?(_), do: true
   def endpoint_url(_), do: "/dynos"
-  def app_resource?(_), do: true
 end

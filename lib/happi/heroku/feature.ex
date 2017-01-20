@@ -4,7 +4,7 @@ defmodule Happi.Heroku.Feature do
   """
 
   @derive [Poison.Encoder]
-  use Happi.Resource
+  use Napper.Resource
 
   defstruct id: "",
     name: "",
@@ -27,7 +27,7 @@ defmodule Happi.Heroku.Feature do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Feature do
+defimpl Napper.Endpoint, for: Happi.Heroku.Feature do
+  def under_master_resource?(_), do: false
   def endpoint_url(_), do: "/account/features"
-  def app_resource?(_), do: false
 end

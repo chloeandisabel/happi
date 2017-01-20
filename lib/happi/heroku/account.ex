@@ -3,7 +3,7 @@ defmodule Happi.Heroku.Account do
   Heroku Account.
   """
 
-  use Happi.Resource
+  use Napper.Resource
 
   @derive [Poison.Encoder]
 
@@ -44,7 +44,7 @@ defmodule Happi.Heroku.Account do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Account do
+defimpl Napper.Endpoint, for: Happi.Heroku.Account do
+  def under_master_resource?(_), do: false
   def endpoint_url(_), do: "/account"
-  def app_resource?(_), do: false
 end

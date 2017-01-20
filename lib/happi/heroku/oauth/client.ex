@@ -1,5 +1,5 @@
 defmodule Happi.Heroku.OAuth.Client do
-  use Happi.Resource
+  use Napper.Resource
   
   defstruct id: "",
     name: "",
@@ -12,7 +12,7 @@ defmodule Happi.Heroku.OAuth.Client do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Oauth.Client do
+defimpl Napper.Endpoint, for: Happi.Heroku.Oauth.Client do
+  def under_master_resource?(_), do: false
   def endpoint_url(_), do: "/oauth/clients"
-  def app_resource?(_), do: false
 end

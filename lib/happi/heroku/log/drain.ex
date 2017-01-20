@@ -4,7 +4,7 @@ defmodule Happi.Heroku.Log.Drain do
   """
   
   alias Happi.Heroku.Ref
-  use Happi.Resource
+  use Napper.Resource
 
   @derive [Poison.Encoder]
 
@@ -25,7 +25,7 @@ defmodule Happi.Heroku.Log.Drain do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Log.Drain do
+defimpl Napper.Endpoint, for: Happi.Heroku.Log.Drain do
+  def under_master_resource?(_), do: true
   def endpoint_url(_), do: "/log-drains"
-  def app_resource?(_), do: true
 end

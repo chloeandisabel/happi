@@ -4,7 +4,7 @@ defmodule Happi.Heroku.Addon.Attachment do
   """
   
   alias Happi.Heroku.{Ref, Addon}
-  use Happi.Resource
+  use Napper.Resource
 
   @derive [Poison.Encoder]
 
@@ -46,7 +46,7 @@ defmodule Happi.Heroku.Addon.Attachment do
   end
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Addon.Attachment do
+defimpl Napper.Endpoint, for: Happi.Heroku.Addon.Attachment do
+  def under_master_resource?(_), do: false
   def endpoint_url(_), do: "/addon-attachments"
-  def app_resource?(_), do: false
 end

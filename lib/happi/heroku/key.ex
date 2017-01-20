@@ -3,7 +3,7 @@ defmodule Happi.Heroku.Key do
   Heroku key.
   """
 
-  use Happi.Resource
+  use Napper.Resource
   
   @derive [Poison.Encoder]
 
@@ -26,7 +26,7 @@ defmodule Happi.Heroku.Key do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Key do
+defimpl Napper.Endpoint, for: Happi.Heroku.Key do
+  def under_master_resource?(_), do: false
   def endpoint_url(_), do: "/account/keys"
-  def app_resource?(_), do: false
 end

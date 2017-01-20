@@ -3,7 +3,7 @@ defmodule Happi.Heroku.Addon.Service do
   Heroku add-on services.
   """
   
-  use Happi.Resource
+  use Napper.Resource
 
   defstruct id: "",
     name: "",
@@ -28,7 +28,7 @@ defmodule Happi.Heroku.Addon.Service do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Addon.Service do
+defimpl Napper.Endpoint, for: Happi.Heroku.Addon.Service do
+  def under_master_resource?(_), do: false
   def endpoint_url(_), do: "/addon-services"
-  def app_resource?(_), do: false
 end

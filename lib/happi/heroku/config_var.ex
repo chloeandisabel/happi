@@ -3,10 +3,10 @@ defmodule Happi.Heroku.ConfigVar do
   Heroku config variables, represented as Maps.
   """
 
-  use Happi.Resource
+  use Napper.Resource
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.ConfigVar do
+defimpl Napper.Endpoint, for: Happi.Heroku.ConfigVar do
+  def under_master_resource?(_), do: true
   def endpoint_url(_), do: "/config-vars"
-  def app_resource?(_), do: true
 end

@@ -3,7 +3,7 @@ defmodule Happi.Heroku.Buildpack do
   Heroku buildpack.
   """
 
-  use Happi.Resource
+  use Napper.Resource
   
   defstruct url: "",
     name: "",
@@ -16,7 +16,7 @@ defmodule Happi.Heroku.Buildpack do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Buildpack do
+defimpl Napper.Endpoint, for: Happi.Heroku.Buildpack do
+  def under_master_resource?(_), do: true
   def endpoint_url(_), do: "/buildpack-installations"
-  def app_resource?(_), do: true
 end

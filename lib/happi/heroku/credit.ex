@@ -3,7 +3,7 @@ defmodule Happi.Heroku.Credit do
   Heroku credit.
   """
 
-  use Happi.Resource
+  use Napper.Resource
 
   @derive [Poison.Encoder]
 
@@ -24,7 +24,7 @@ defmodule Happi.Heroku.Credit do
   }
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Credit do
+defimpl Napper.Endpoint, for: Happi.Heroku.Credit do
+  def under_master_resource?(_), do: false
   def endpoint_url(_), do: "/account/credits"
-  def app_resource?(_), do: false
 end

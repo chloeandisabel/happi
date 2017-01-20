@@ -14,8 +14,7 @@ defmodule Happi.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :httpoison],
-     env: [{:api, Happi.API}]]
+    [applications: []]
   end
 
   # Dependencies can be Hex packages:
@@ -28,7 +27,6 @@ defmodule Happi.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:httpoison, "~> 0.10.0"},
-     {:poison, "~> 2.0"}]
+    [{:napper, git: "https://github.com/chloeandisabel/napper.git"}]
   end
 end

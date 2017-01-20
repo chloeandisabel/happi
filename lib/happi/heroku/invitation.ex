@@ -4,7 +4,7 @@ defmodule Happi.Heroku.Invitation do
   """
 
   alias Happi.Heroku.User
-  use Happi.Resource, only: [:get]
+  use Napper.Resource, only: [:get]
 
   @derive [Poison.Encoder]
   
@@ -34,7 +34,7 @@ defmodule Happi.Heroku.Invitation do
   end
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.Invitation do
+defimpl Napper.Endpoint, for: Happi.Heroku.Invitation do
+  def under_master_resource?(_), do: false
   def endpoint_url(_), do: "/invitations"
-  def app_resource?(_), do: false
 end

@@ -5,7 +5,7 @@ defmodule Happi.Heroku.OAuth do
   
   alias Happi.Heroku.User
   alias Happi.Heroku.OAuth.{Client, Grant, Token}
-  use Happi.Resource
+  use Napper.Resource
 
   @derive [Poison.Encoder]
 
@@ -39,7 +39,7 @@ defmodule Happi.Heroku.OAuth do
   end
 end
 
-defimpl Happi.Endpoint, for: Happi.Heroku.OAuth do
+defimpl Napper.Endpoint, for: Happi.Heroku.OAuth do
+  def under_master_resource?(_), do: false
   def endpoint_url(_), do: "/oauth/authorizations"
-  def app_resource?(_), do: false
 end
