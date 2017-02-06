@@ -12,21 +12,40 @@ list/get/update/delete REST API calls.
 
 ## Installation
 
-The package can be installed by adding Happi to your list of dependencies
-in `mix.exs`. You'll also need Napper.
+First, add Happi to your `mix.exs` dependencies:
 
 ```elixir
 def deps do
-  [{:happi, git: "https://github.com/chloeandisabel/happi.git"},
-   {:napper, git: "https://github.com/chloeandisabel/napper.git"}]
+  [{:happi, git: "https://github.com/chloeandisabel/happi.git"}]
 end
+```
+
+and run `$ mix deps.get`. Now, list the `:happi` application as your
+application dependency:
+
+```elixir
+def applications do
+  [applications: [:happi]]
+end
+```
+
+## Configuration
+
+We need to tell Napper about Heroku's API. This example assumes you've
+defined the environment variable `HEROKU_API_KEY`.
+
+```elixir
+config :napper,
+  url: "https://api.heroku.com",
+  auth: "Bearer #{System.get_env("HEROKU_API_KEY")}",
+  accept: "application/vnd.heroku+json; version=3",
+  master_prefix: "/apps",
+  master_id: "prod-app-name"
 ```
 
 ## Using Happi
 
-First we create a client using Napper. This example assumes we've used our
-config file to configure Napper properly. Napper comes with an example
-config file for the Heroku API.
+First we create a client using Napper.
 
 ```elixir
 iex> client = Napper.api_client
