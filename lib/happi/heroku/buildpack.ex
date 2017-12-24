@@ -4,16 +4,17 @@ defmodule Happi.Heroku.Buildpack do
   """
 
   use Napper.Resource
-  
+
   defstruct url: "",
-    name: "",
-    ordinal: 0                  # only used with buildpack installations
+            name: "",
+            # only used with buildpack installations
+            ordinal: 0
 
   @type t :: %__MODULE__{
-    url: String.t,
-    name: String.t,
-    ordinal: integer
-  }
+          url: String.t(),
+          name: String.t(),
+          ordinal: integer
+        }
 end
 
 defimpl Napper.Endpoint, for: Happi.Heroku.Buildpack do

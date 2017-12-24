@@ -7,5 +7,5 @@ defmodule Happi.Heroku.SourceBlob do
 
   defstruct checksum: "", url: "", version: ""
 
-  @type t :: %__MODULE__{checksum: String.t, url: String.t, version: String.t}
+  @type t :: %__MODULE__{checksum: String.t(), url: String.t(), version: String.t()}
 end

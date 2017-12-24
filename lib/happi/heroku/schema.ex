@@ -4,10 +4,10 @@ defmodule Happi.Heroku.Schema do
 
   Only the `Happi.get` endpoint is useful.
   """
-  @spec get(Happi.t) :: Map.t
+  @spec get(Happi.t()) :: Map.t()
   def get(client) do
     client
     |> client.api.get("/schema")
-    |> Poison.decode!
+    |> Poison.decode!()
   end
 end
